@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>web</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <form onsubmit="return sendMessage();">
+        <input id="message" placeholder="Digite">
+        <input type="submit">
+    </form>
+    <ul id="users"></ul>
+
+    <ul id="messages"></ul>
+    <script type="text/javascript">
+        var server = "http://localhost:3000";
+        var socket = io(server);
+
+
+        socket.on("receivedMessage", (data) => {
+            //aqui dentro
+
+            console.log(data);
+
+
+        })
+
+        function renderMessage(message){
+            $('#users').append('')
+        }
+       /* var receiver = "";
+        var sender = "";
+
+        function sendMessage(){
+             //evitar que o form seja submitado
+             event.preventDefault();
+
+            //get mensagem
+            var message = document.getElementById("message").value;
+
+            //mandar a mensagem pro servidor
+            socket.emit("send_message",{
+                sender: sender,
+                receiver: receiver,
+                message: message
+            });
+            var html = "";
+            html += "<li>Você diz:"+ message + "</li>";
+            document.getElementById("messages").innerHTML += html;
+        }
+
+        //listen from server
+        socket.on("new_message", function(data){
+            var html = "";
+            html += "<li>" + data.sender + "diz:" + data.message + "</li>";
+            document.getElementById("messages").innerHTML += html;
+        });
+
+$.ajax({
+    url: server + "/get_messages",
+    method: "GET",
+    success: function (response) {
+        console.log(response);
+        var messages = document.getElementById("messages");
+ 
+        // parse JSON to javascript object
+        var data = JSON.parse(response);
+        for (var a = 0; a < data.length; a++) {
+            // creates new DOM element
+            var li = document.createElement("li");
+ 
+            // add message content as HTML
+            li.innerHTML = data[a].message;
+ 
+            // append at the end of list
+            messages.appendChild(li);
+        }
+    }
+});
+
+        */
+    </script>
+</body>
+</html>

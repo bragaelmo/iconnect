@@ -1,0 +1,702 @@
+<div id="mytask-layout" class="theme-indigo">
+    {{> sidebarAgente}}
+    <!-- main body area -->
+    <div class="main px-lg-4 px-md-4">
+        <!-- Body: Header -->
+        {{> header}}
+        <!-- Body: Body -->
+        <div class="body d-flex">
+            <div class="container-xxl p-0">
+                <div class="row g-0">
+                    <div class="col-12 d-flex">
+                        <!-- Card: -->
+                        <div class="card card-chat border-right border-top-0 border-bottom-0  w380" style="transform: translate(0px, -50px);
+">
+                            <div class="px-4 py-3 py-md-4">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control mb-1" placeholder="Pesquisar...">
+                                </div>
+                                <div class="nav nav-pills justify-content-between text-center" role="tablist">
+                                    <a class="flex-fill rounded border-0 nav-link active" data-bs-toggle="tab" href="#em-espera" role="tab" aria-selected="false"><i class="icofont-ui-clock fs-5"></i> Em Espera</a>
+                                    <a class="flex-fill rounded border-0 nav-link" data-bs-toggle="tab" href="#em-atendimento" role="tab" aria-selected="true"><i class="icofont-ui-chat fs-5"></i> Em Atedimento</a>
+                                </div>
+                            </div>
+                            <div class="tab-content border-top">
+                                <div class="tab-pane fade show active" id="em-espera" role="tabpanel">
+                                    <ul id="contact_area" class="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                                        {{!-- <li class="list-group-item px-md-4 py-3 py-md-4">
+                                            <a href="?wa_id=8" class="d-flex">
+                                                <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=kevin&background=random&color=ff0000&bold=true">
+                                                <div class="flex-fill ms-3 text-truncate">
+                                                    <h6 class="d-flex justify-content-between mb-0"><span>Kevin</span> <small class="msg-time">10:45 AM</small></h6>
+                                                    <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i> </span> Rex telecom</span>
+                                                </div>
+                                            </a>
+                                        </li> --}}
+
+                                    </ul>
+                                </div>
+                                <div class="tab-pane fade" id="em-atendimento" role="tabpanel">
+                                    <ul class="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                                        <li class="list-group-item px-md-4 py-3 py-md-4">
+                                            <a href="javascript:void(0);" class="d-flex">
+                                                <img class="avatar rounded-circle" src="images/xs/avatar6.jpg" alt="">
+                                                <div class="flex-fill ms-3 text-truncate">
+                                                    <h6 class="d-flex justify-content-between mb-0"><span>Vanessa Knox</span> <small class="msg-time">10:45 AM</small></h6>
+                                                    <span class="text-muted">Estou com um problema na minha fatura, voces podem me ajudar?</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card: -->
+                        <div class="card card-chat-body border-0  w-100 px-4 px-md-5 py-3 py-md-4" style="height: 86vh" >
+                            <!-- Chat: Header -->
+                            <div class="chat-header d-flex justify-content-between align-items-center border-bottom pb-3">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <!-- Body: Header -->
+                                        <div class="header">
+                                            <nav class="navbar py-4">
+                                                <div class="container-xxl">
+                                                    <!-- menu toggler -->
+                                                    <button class="navbar-toggler p-0 border-0 menu-toggle order-3 ms-1" type="button" data-bs-toggle="collapse" data-bs-target="#mainHeader">
+                                                    <span class="fa fa-bars"></span>
+                                                    </button>
+                                                    <!-- main menu Search-->
+                                                    <div id="headerClient" style="display: none;" class="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 ">
+                                                        <div class="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 ">
+                                                            <div class="input-group flex-nowrap input-group-lg">
+                                                                <a href="./" title="Home"><i class="icofont-arrow-left fs-4"></i></a>
+                                                                <img id="chat-client-photo" class="ms-3 avatar rounded-circle" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=kevin&background=random&color=ff0000&bold=true" width="35">
+                                                                <div style="transform: translateY(4px);">
+                                                                    <div class="btn-group  dropend">
+                                                                        <a style="border: none; font-size: 18px; cursor: pointer;"class="dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <span id="chat-client-name">Carregando...</span>
+                                                                        </a>
+                                                                        <ul class="dropdown-menu border-0 shadow py-3 px-2">
+                                                                            <li>
+                                                                                <button type="button" class="dropdown-item py-2 rounded" data-bs-toggle="modal" data-bs-target="#midias">
+                                                                                Mídias
+                                                                                </button>
+                                                                            </li>
+                                                                            <li>
+                                                                                <button type="button" class="dropdown-item py-2 rounded" data-bs-toggle="modal" data-bs-target="#modaltransferir">
+                                                                                Transferir
+                                                                                </button>
+                                                                            </li>
+                                                                            <li>
+                                                                                <button type="button" class="dropdown-item py-2 rounded" data-bs-toggle="modal" data-bs-target="#modalconvidaragente">
+                                                                                Convidar Agente
+                                                                                </button>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="headerClientEmpty" class="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 ">
+                                                        <div class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
+                                                            <div class="input-group flex-nowrap input-group-lg">
+                                                                <div style="transform: translateY(-6px);">
+                                                                    <div class="btn-group">
+                                                                        <a style="border: none; font-size: 25px;"class="dropdown-toggle">
+                                                                        <span>Selecione uma Conversa</span>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                        </div>
+                                        <!-- Body: Body -->
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-center">
+                                            <!-- Modal Tranferir-->
+                                            <div class="modal fade" id="modaltransferir" tabindex="-1" aria-labelledby="modaltransferir" style="display: none;" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header" style="background-color: #075E54; color: white; font-weight: bold;">
+                                                            <h5 class="modal-title" id="modaltransferir"> <i class="icofont-ui-user-group fs-4"></i> Tranferir Atendimento</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <ul class="nav nav-tabs tab-body-header rounded d-inline-flex" role="tablist">
+                                                                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nav-agentes" role="tab">Agentes</a></li>
+                                                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#nav-equipe" role="tab">Equipe</a></li>
+                                                            </ul>
+                                                            <div class="tab-content mt-2">
+                                                                <div class="tab-pane fade show active" id="nav-agentes" role="tabpanel">
+                                                                    <div class="col-12 my-1">
+                                                                        <div class="input-group">
+                                                                            <input class="form-control" type="search" placeholder="Pesquisar" aria-label="Search" style="border-right: none;">
+                                                                            <div class="input-group-append">
+                                                                                <div class="input-group-text" style="background-color: #FFF"><i class="icofont-search-job fs-5"></i></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="card">
+                                                                        <div class="card-body">
+                                                                            <div class="flex-grow-1">
+                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                                    <div class="d-flex align-items-center flex-fill">
+                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=mario&background=random&color=ff0000&bold=true">
+                                                                                        <div class="d-flex flex-column ps-3">
+                                                                                            <h6 class="fw-bold mb-0 small-14">Mario</h6>
+                                                                                            <span class="text-muted">mario@gmail.com</span>
+                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Supervisor | Geral</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                                    <div class="d-flex align-items-center flex-fill">
+                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
+                                                                                        <div class="d-flex flex-column ps-3">
+                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
+                                                                                            <span class="text-muted">Sidney@gmail.com</span>
+                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                                    <div class="d-flex align-items-center flex-fill">
+                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
+                                                                                        <div class="d-flex flex-column ps-3">
+                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
+                                                                                            <span class="text-muted">Sidney@gmail.com</span>
+                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                                    <div class="d-flex align-items-center flex-fill">
+                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
+                                                                                        <div class="d-flex flex-column ps-3">
+                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
+                                                                                            <span class="text-muted">Sidney@gmail.com</span>
+                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                                    <div class="d-flex align-items-center flex-fill">
+                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
+                                                                                        <div class="d-flex flex-column ps-3">
+                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
+                                                                                            <span class="text-muted">Sidney@gmail.com</span>
+                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                                    <div class="d-flex align-items-center flex-fill">
+                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
+                                                                                        <div class="d-flex flex-column ps-3">
+                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
+                                                                                            <span class="text-muted">Sidney@gmail.com</span>
+                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                                    <div class="d-flex align-items-center flex-fill">
+                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
+                                                                                        <div class="d-flex flex-column ps-3">
+                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
+                                                                                            <span class="text-muted">Sidney@gmail.com</span>
+                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                                    <div class="d-flex align-items-center flex-fill">
+                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
+                                                                                        <div class="d-flex flex-column ps-3">
+                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
+                                                                                            <span class="text-muted">Sidney@gmail.com</span>
+                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="tab-pane fade" id="nav-equipe" role="tabpanel">
+                                                                    <div class="card">
+                                                                        <div class="card-body">
+                                                                            <!-- List Group: with badge left side -->
+                                                                            <ul class="list-group list-group-custom">
+                                                                                <li class="list-group-item">
+                                                                                    <div class="btn btn-outline-warning" style="width: 100%; text-align: left;">
+                                                                                        <span class="badge bg-warning me-2">17</span>
+                                                                                        Geral
+                                                                                    </div>
+                                                                                </li>
+                                                                                <li class="list-group-item">
+                                                                                    <div class="btn btn-outline-primary" style="width: 100%; text-align: left;">
+                                                                                        <span class="badge bg-primary me-2">14</span>
+                                                                                        Comercial
+                                                                                    </div>
+                                                                                </li>
+                                                                                <li class="list-group-item">
+                                                                                    <div class="btn btn-outline-danger" style="width: 100%; text-align: left;">
+                                                                                        <span class="badge bg-danger me-2">2</span>
+                                                                                        Técnico
+                                                                                    </div>
+                                                                                </li>
+                                                                                <li class="list-group-item">
+                                                                                    <div class="btn btn-outline-info" style="width: 100%; text-align: left;">
+                                                                                        <span class="badge bg-info me-2">1</span>
+                                                                                        Financeiro
+                                                                                    </div>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!--                                                                         <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="button" class="btn btn-primary">Transferir</button>
+                                                            </div>
+                                                            -->                                                                    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Modal Convidar Agente-->
+                                            <div class="modal fade" id="modalconvidaragente" tabindex="-1" aria-labelledby="modalconvidaragente" style="display: none;" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header" style="background-color: #075E54; color: white; font-weight: bold;">
+                                                            <h5 class="modal-title" id="modalconvidaragente"> <i class="icofont-support fs-4"></i>Convidar Agente</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            ...
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="button" class="btn btn-primary">Convidar</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Chat: body -->
+                            <ul id="chatBody" style="display: none;" class="chat-history list-unstyled mb-0 py-lg-5 py-md-4 py-3 flex-grow-1">
+                                {{!-- <!-- Chat: left -->
+                                <li class="mb-3 d-flex flex-row align-items-end">
+                                    <div class="max-width-70">
+                                        <div class="user-info mb-1">
+                                            <span class="text-muted small">
+                                            12:59, Hoje<br>Kevin:</span>
+                                        </div>
+                                        <div class="card border-0 p-3">
+                                            <div class="message"> Olá, bom dia.</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                
+                                <li class="mb-3 d-flex flex-row-reverse align-items-end">
+                                    <div class="max-width-70 text-right">
+                                        <div class="user-info mb-1">
+                                            <span class="text-muted small">13:00, Hoje</span>
+                                        </div>
+                                        <div class="card border-0 p-3 bg-primary text-light">
+                                            <div class="message">Bom dia, em que podemos ajudar?</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                
+                                <li class="mb-3 d-flex flex-row align-items-end">
+                                    <div class="max-width-70">
+                                        <div class="user-info mb-1">
+                                            <span class="text-muted small">
+                                            12:59, Hoje<br>Kevin:</span>
+                                        </div>
+                                        <div class="card border-0 p-3">
+                                            <div class="message"> Estou precisando de ajuda com minha fatura.</div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="mb-3 d-flex flex-row align-items-end">
+                                    <div class="max-width-70">
+                                        <div class="user-info mb-1">
+                                            <span class="text-muted small">
+                                            12:59, Hoje<br>Kevin:</span>
+                                        </div>
+                                        <div class="card border-0 p-3">
+                                            <div class="message"> Estou precisando de ajuda com minha fatura.</div>
+                                        </div>
+                                    </div>
+                                </li> 
+
+                                <li class="mb-3 d-flex flex-row align-items-end">
+                                    <div class="max-width-70">
+                                        <div class="user-info mb-1">
+                                            <span class="text-muted small">
+                                            12:59, Hoje<br>Kevin:</span>
+                                        </div>
+                                        <div class="card border-0 p-3">
+                                            <div class="message"> Estou precisando de ajuda com minha fatura.</div>
+                                        </div>
+                                    </div>
+                                </li> 
+
+                                <li class="mb-3 d-flex flex-row align-items-end">
+                                    <div class="max-width-70">
+                                        <div class="user-info mb-1">
+                                            <span class="text-muted small">
+                                            12:59, Hoje<br>Kevin:</span>
+                                        </div>
+                                        <div class="card border-0 p-3">
+                                            <div class="message"> Estou precisando de ajuda com minha fatura.</div>
+                                        </div>
+                                    </div>
+                                </li> 
+
+                                <li class="mb-3 d-flex flex-row align-items-end">
+                                    <div class="max-width-70">
+                                        <div class="user-info mb-1">
+                                            <span class="text-muted small">
+                                            12:59, Hoje<br>Kevin:</span>
+                                        </div>
+                                        <div class="card border-0 p-3">
+                                            <div class="message"> Estou precisando de ajuda com minha fatura.</div>
+                                        </div>
+                                    </div>
+                                </li>  --}}
+
+                                
+                            </ul>
+                            <!-- Chat: body -->
+                            <ul id="chatBodyEmpty" class="chat-history list-unstyled mb-0 py-lg-5 py-md-4 py-3 flex-grow-1">
+                                <div style="width: 100%; text-align: center;">
+                                    <h3 class="text-muted">Nenhuma conversa selecionada</h3>
+                                </div>
+                            </ul>
+                            <!-- Chat: Footer -->
+                            <div id="chatFooterEmpty"></div>
+                            <div id="chatFooter" class="chat-message">
+                                <form id="sendMessageToClient" method="POST" action="">
+                                    <div class="publisher bt-1 border-light">
+                                        <i class="avatar avatar-xs icofont-brand-whatsapp" style="font-size: 30px; color: silver;"></i>
+                                        <input id="textarea" class="form-control mb-1" type="password" placeholder="Escreva sua mensagem aqui...">
+                                        <span class="publisher-btn file-group">
+                                        <i class="fa fa-paperclip file-browser"></i>
+                                        <input type="file">
+                                        </span>
+                                        <button class="btn btn-light btn-sm">
+                                            <i class="icofont-paper-plane" style="font-size: 25px;"></i> 
+                                        </button>                                        
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- row end -->
+            </div>
+        </div>
+    </div>
+    <!-- Modal Members-->
+    <div class="modal fade" id="addUser" tabindex="-1" aria-labelledby="addUserLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title  fw-bold" id="addUserLabel">Employee Invitation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="inviteby_email">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Email address" id="exampleInputEmail1" aria-describedby="exampleInputEmail1">
+                            <button class="btn btn-dark" type="button" id="button-addon2">Sent</button>
+                        </div>
+                    </div>
+                    <div class="members_list">
+                        <h6 class="fw-bold ">Employee </h6>
+                        <ul class="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                            <li class="list-group-item py-3 text-center text-md-start">
+                                <div class="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row">
+                                    <div class="no-thumbnail mb-2 mb-md-0">
+                                        <img class="avatar lg rounded-circle" src="/images/xs/avatar2.jpg" alt="">
+                                    </div>
+                                    <div class="flex-fill ms-3 text-truncate">
+                                        <h6 class="mb-0  fw-bold">Rachel Carr(you)</h6>
+                                        <span class="text-muted">rachel.carr@gmail.com</span>
+                                    </div>
+                                    <div class="members-action">
+                                        <span class="members-role ">Admin</span>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="icofont-ui-settings  fs-6"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="icofont-ui-password fs-6 me-2"></i>ResetPassword</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="icofont-chart-line fs-6 me-2"></i>ActivityReport</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item py-3 text-center text-md-start">
+                                <div class="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row">
+                                    <div class="no-thumbnail mb-2 mb-md-0">
+                                        <img class="avatar lg rounded-circle" src="/images/xs/avatar3.jpg" alt="">
+                                    </div>
+                                    <div class="flex-fill ms-3 text-truncate">
+                                        <h6 class="mb-0  fw-bold">Lucas Baker<a href="#" class="link-secondary ms-2">(Resend invitation)</a></h6>
+                                        <span class="text-muted">lucas.baker@gmail.com</span>
+                                    </div>
+                                    <div class="members-action">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Members
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item" href="#">
+                                                    <i class="icofont-check-circled"></i>
+                                                    <span>All operations permission</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">
+                                                    <i class="fs-6 p-2 me-1"></i>
+                                                    <span>Only Invite & manage team</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="icofont-ui-settings  fs-6"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="icofont-delete-alt fs-6 me-2"></i>Delete Member</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item py-3 text-center text-md-start">
+                                <div class="d-flex align-items-center flex-column flex-sm-column flex-md-column flex-lg-row">
+                                    <div class="no-thumbnail mb-2 mb-md-0">
+                                        <img class="avatar lg rounded-circle" src="/images/xs/avatar8.jpg" alt="">
+                                    </div>
+                                    <div class="flex-fill ms-3 text-truncate">
+                                        <h6 class="mb-0  fw-bold">Una Coleman</h6>
+                                        <span class="text-muted">una.coleman@gmail.com</span>
+                                    </div>
+                                    <div class="members-action">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Members
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item" href="#">
+                                                    <i class="icofont-check-circled"></i>
+                                                    <span>All operations permission</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">
+                                                    <i class="fs-6 p-2 me-1"></i>
+                                                    <span>Only Invite & manage team</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="btn-group">
+                                            <div class="btn-group">
+                                                <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="icofont-ui-settings  fs-6"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li><a class="dropdown-item" href="#"><i class="icofont-ui-password fs-6 me-2"></i>ResetPassword</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="icofont-chart-line fs-6 me-2"></i>ActivityReport</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="icofont-delete-alt fs-6 me-2"></i>Suspend member</a></li>
+                                                    <li><a class="dropdown-item" href="#"><i class="icofont-not-allowed fs-6 me-2"></i>Delete Member</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+
+
+<script>
+    var server = "https://pag.rexinternet.com.br:3000";
+    var socket = io.connect(server);
+
+    //render all messages that received
+    socket.on("receivedMessage", (data) => {
+
+        const date = new Date()
+        const clientName = data.contacts[0].profile.name.split(' ')[0];
+        const timeMsg = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2,'0')}`
+        const clientNumber = data.messages[0].from;
+        const clientMsg = data.messages[0].text.body;
+
+        /**/
+        renderInMessageVisualizer({clientNumber, clientName, timeMsg, clientMsg});
+
+        //exist same contact in display messager? if exist delete
+        var queryNumbers = document.querySelectorAll(`.n${clientNumber}`);
+        console.log(queryNumbers);
+        console.log('--------');
+
+        if(queryNumbers.length >= 1){
+            queryNumbers[1].remove();
+        }
+
+        //render mensagem in chat if exist
+        var query = location.search.slice(1);
+        var numberChat = query.split('=')[1];
+
+
+        if(clientNumber == numberChat){
+            const chatBody = document.getElementById('chatBody');
+
+            renderMessageInChat({clientName, timeMsg, clientMsg, isClient: true})
+
+            
+
+        }
+
+    })
+ 
+    //render message chat
+    socket.on('chatData', () => {
+        console.log('CHEGOU');
+    })
+
+    socket.emit('ready');
+
+    //render msg of DB
+    fetch('https://pag.rexinternet.com.br:3000/wpp/last-message-client')
+        .then(res => res.json())
+        .then(data => {
+            for(clients of data){
+            
+            const client = {
+                clientNumber: clients["from_wa_id"],
+                clientName: clients["name"],
+                timeMsg: clients["created_at"],
+                clientMsg: clients["body"],
+            }
+
+            renderInMessageVisualizer(client);
+        }
+        })
+        .catch(e => console.log(e));
+
+
+    function renderInMessageVisualizer(obj){
+
+        if(obj.timeMsg.indexOf('Z') != -1){
+            const date = new Date(obj.timeMsg.replace('Z',''));
+
+            const hour = String(date.getHours()).padStart(2,'0');
+            const minute = String(date.getMinutes()).padStart(2,'0');
+            
+            obj.timeMsg = hour + ':' + minute;
+        }
+
+        
+
+        
+
+         $('#contact_area').prepend(
+            `<li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
+                <a href="?wa_id=${obj.clientNumber}" class="d-flex">
+                    <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
+                    <div class="flex-fill ms-3 text-truncate">
+                        <h6 class="d-flex justify-content-between mb-0"><span>${obj.clientName}</span> <small class="msg-time">${obj.timeMsg}</small></h6>
+                        <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i></span>
+                        ${obj.clientMsg}
+                    </div>
+                </a>
+            </li>`
+        )
+    }
+
+
+    const messages = document.getElementById('chatBody');
+
+    function getMessages() {
+        // Prior to getting your messages.
+    shouldScroll = messages.scrollTop + messages.clientHeight === messages.scrollHeight;
+    
+    // After getting your messages.
+    if (!shouldScroll) {
+        scrollToBottom();
+    }
+    }
+
+    function scrollToBottom() {
+    messages.scrollTop = messages.scrollHeight;
+    }
+
+    scrollToBottom();
+
+    //setInterval(getMessages, 5000);
+
+
+    function renderMessageInChat(obj){
+        const chatBody = document.getElementById('chatBody');
+
+        if(obj.timeMsg.indexOf('Z') != -1){
+             const date = new Date(obj.timeMsg.replace('Z',''));
+            
+             const month = String(date.getMonth()); 
+             const hour = String(date.getHours()).padStart(2,'0');
+             const minute = String(date.getMinutes()).padStart(2,'0');
+            
+             obj.timeMsg = month + ',' + hour + ':' + minute;
+        }
+
+        if(obj.isClient){
+            chatBody.insertAdjacentHTML("beforeend",`
+                    <li class="mb-3 d-flex flex-row align-items-end">
+                                    <div class="max-width-70">
+                                        <div class="user-info mb-1">
+                                            <span class="text-muted small">
+                                            ${obj.timeMsg},<br>${obj.clientName}:</span>
+                                        </div>
+                                        <div class="card border-0 p-3">
+                                            <div class="message"> ${obj.clientMsg}</div>
+                                        </div>
+                                    </div>
+                                </li>`)
+        }
+    }
+    ///ENVIAR MENSAGEM
+    const form = $('#sendMessageToClient');
+    form.addEventListener('submit', e => e.preventDefault());
+
+</script>

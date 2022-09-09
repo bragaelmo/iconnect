@@ -1,0 +1,89 @@
+<div id="mytask-layout" class="theme-indigo">
+    {{> sidebarAgente}}
+    <!-- main body area -->
+    <div class="main px-lg-4 px-md-4">
+        <!-- Body: Header -->
+        {{> header}}
+        <!-- Body: Body -->
+        <div class="body d-flex py-3">
+            <div class="container-xxl">
+                <div class="row align-items-center">
+                    <div class="border-0 mb-4">
+                        <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+                            <h3 class="fw-bold mb-0">Configurações</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end  -->
+                <div class="row align-item-center">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
+                                <h6 class="mb-0 fw-bold ">Informações Pessoais</h6>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="row g-3 align-items-center">
+                                        <div class="col-md-12">
+                                            <label for="name" class="form-label">Nome</label>
+                                            <input type="text" class="form-control" id="name" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="CPF" class="form-label">CPF</label>
+                                            <input type="text" class="form-control" id="CPF" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="emailaddress" class="form-label">Nascimento</label>
+                                            <input type="date" class="form-control" id="emailaddress" required>
+                                        </div>
+                                        
+                                        
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-4">Salvar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
+                                <h6 class="mb-0 fw-bold ">Informações de Login</h6>
+                            </div>
+                            <div class="card-body">
+                                <form id="advanced-form" data-parsley-validate novalidate>
+                                    <div class="row g-3 align-items-center">
+                                        <div class="col-md-6">
+                                            <label for="emailaddress" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="emailaddress" required>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="text-input1" class="form-label">Senha Atual</label>
+                                                <input type="text" id="text-input1" class="form-control" required data-parsley-minlength="8">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="text-input1" class="form-label">Nova Senha</label>
+                                                <input type="text" id="text-input1" class="form-control" required data-parsley-minlength="8">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="text-input1" class="form-label">Nova Senha Novamente</label>
+                                                <input type="text" id="text-input1" class="form-control" required data-parsley-minlength="8">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-4">Salvar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end  -->
+            </div>
+        </div>
+    </div>
+</div>
