@@ -19,6 +19,8 @@
     "http": "^0.0.1-security",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.19",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
     "socket.io": "^4.5.1"
   }
 }

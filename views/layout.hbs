@@ -68,7 +68,7 @@
 
                 //RENDER MESSAGES IN CHAT
                 const clientNumber = data.wa_id
-                fetch('https://pag.rexinternet.com.br:3000/wpp/message-chat-client', {
+                fetch('https://localhost:3000/wpp/message-chat-client', {
                   method: 'POST',
                   headers: {
                     'Accept': 'application/json',
@@ -103,7 +103,7 @@
             function renderMessagesInChat(arr,clientNumber){
 
               //take name
-              fetch('https://pag.rexinternet.com.br:3000/wpp/client-data',{
+              fetch('https://localhost:3000/wpp/client-data',{
                 method: 'POST',
                   headers: {
                     'Accept': 'application/json',

@@ -390,15 +390,16 @@
                             <!-- Chat: Footer -->
                             <div id="chatFooterEmpty"></div>
                             <div id="chatFooter" class="chat-message">
-                                <form id="sendMessageToClient" method="POST" action="">
+                                <form id="sendMessageToClient" action="/wpp/send-message" method="POST">
+                                    
                                     <div class="publisher bt-1 border-light">
                                         <i class="avatar avatar-xs icofont-brand-whatsapp" style="font-size: 30px; color: silver;"></i>
-                                        <input id="textarea" class="form-control mb-1" type="password" placeholder="Escreva sua mensagem aqui...">
+                                        <input id="textarea" class="form-control mb-1" placeholder="Escreva sua mensagem aqui...">
                                         <span class="publisher-btn file-group">
                                         <i class="fa fa-paperclip file-browser"></i>
                                         <input type="file">
                                         </span>
-                                        <button class="btn btn-light btn-sm">
+                                        <button id="send-msg"class="btn btn-light btn-sm">
                                             <i class="icofont-paper-plane" style="font-size: 25px;"></i> 
                                         </button>                                        
                                     </div>
@@ -550,7 +551,8 @@
 
 
 <script>
-    var server = "https://pag.rexinternet.com.br:3000";
+    //var server = "https://pag.rexinternet.com.br:3000";
+    var server = "https://localhost:3000";
     var socket = io.connect(server);
 
     //render all messages that received
@@ -584,8 +586,6 @@
 
             renderMessageInChat({clientName, timeMsg, clientMsg, isClient: true})
 
-            
-
         }
 
     })
@@ -598,7 +598,7 @@
     socket.emit('ready');
 
     //render msg of DB
-    fetch('https://pag.rexinternet.com.br:3000/wpp/last-message-client')
+    fetch('https://localhost:3000/wpp/last-message-client')
         .then(res => res.json())
         .then(data => {
             for(clients of data){
@@ -695,8 +695,46 @@
                                 </li>`)
         }
     }
+    
+    function sendmsg(){
+         msg = document.getElementById('textarea').value;
+        //INSERIR MSG NO BANCO
+        console.log (msg)
+        console.log('Deu certo')
+        //obtem o corpo do chat
+      const chatBody = document.getElementById('chatBody');
+            if(msg){
+                    chatBody.insertAdjacentHTML("beforeend",`
+                            <li class="mb-3 d-flex flex-row justify-content-end">
+                                            <div class="max-width-70">
+                                                <div class="user-info mb-1">
+                                                    <span class="text-muted small">
+                                                    teste,<br>Robo zenvia:</span>
+                                                </div>
+                                                <div class="card border-0 p-3">
+                                                    <div class="message"> ${msg}</div>
+                                                </div>
+                                            </div>
+                                        </li>`)
+                }
+            scrollToBottom();
+
+    }
+	
+
     ///ENVIAR MENSAGEM
-    const form = $('#sendMessageToClient');
-    form.addEventListener('submit', e => e.preventDefault());
+   const form = document.getElementById('sendMessageToClient')
+    form.addEventListener('submit', e => {
+        e.preventDefault()
+            sendmsg();
+            })
+        
+         //enviar msg ao apertar entter
+   /* $(document).on('keydown', function(event) {
+    if(event.keyCode === 13) {
+        sendmsg();
+    }
+
+    });       */
 
 </script>

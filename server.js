@@ -5,6 +5,7 @@ const key = fs.readFileSync("./openssl/privkey.pem");
 const cert = fs.readFileSync("./openssl/cert.pem");
 const ca = fs.readFileSync("./openssl/chain.pem");
 
+
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -14,10 +15,13 @@ var hbs = require('hbs');
 var helpers = require('./components/hbsHelpers');
 
 const path = require('path');
+
 const server = require('https').createServer({key: key,
                                               cert: cert,
                                               ca: ca
                                             },app);
+
+
 
 //for socket
 module.exports = server;
@@ -25,6 +29,12 @@ module.exports = server;
 io.on('end', function (){
   socket.disconnect(0);
 });*/
+
+const io = require('socket.io')(server)
+
+io.on('connection',(socket)=>{
+  console.log('new connection', socket)
+})
 
 app.use(session({
   name : 'login',
@@ -89,6 +99,6 @@ function getStage(user){
 console.log(getStage("user1"))
 
 //inicia o servidor
-server.listen(3006, function(){
-  console.log('server listening in port 3006');
+server.listen(3000, function(){
+  console.log('server listening in port 3000');
 });

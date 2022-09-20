@@ -32,6 +32,7 @@ const router = require('express').Router(); //express
 const connection = require('./db');         //db
 const io = require('./socket');             //socket
 
+
 //conexão com banco de dados
 const con = conectiondb();
 
@@ -148,50 +149,62 @@ router.get('/painel-agente', (req,res) => {
 //webhook
 router.post("/webhook", (req,res) => {
     const userInfo = req.body; 
+    try {
+        //obtive msm numero
+        console.log(userInfo.message.from);
 
-   //console.log(userInfo);
+        //if it's client message 
+            if(userInfo["message"]){
+                //console.log(userInfo.message.from);
+                //console.log(userInfo.message.visitor.name);
+                //verifing if client exist for register
+                let userExists = connection.query(
+                    `SELECT name FROM contacts WHERE wa_id = ?`
+                , userInfo.message.from
+                , function(err,results,fields){
+                    if(err) {throw err};
+                    console.log('xd');
+                        
+                    //if not, register
+                    if(Object.keys(results).length == 0){
+                        connection.query(`INSERT INTO contacts(wa_id,name) VALUES('${userInfo.message.from}','${userInfo.message.visitor.name}')`);
+                        if (err) { throw err}; 
+                        console.log('xd');
+                    };
+                    return results;
+                })
+                console.log(userInfo.message.contents[0].type);
+          
 
-    //if it's client message 
-    if(userInfo["contacts"]){
-        //verifing if client exist for register
-        let userExists = connection.query(
-            `SELECT name FROM contacts WHERE wa_id = ?`
-        , userInfo.messages[0].from
-        , function(err,results,fields){
-            if(err) throw err;
-            console.log('xd');
+                //save message
+                connection.query('INSERT INTO messages (from_wa_id, type, body) VALUES(?,?,?)', 
+                [userInfo.message.from,userInfo.message.contents[0].type, userInfo.message.contents[0].text]);
+
+                //sent contact that sent message
+                io.emit('receivedMessage', userInfo)
+
+                res.status(200).send({message: "enviado"});
+            }
                 
-            //if not, register
-            if(Object.keys(results).length == 0){
-                connection.query(`INSERT INTO contacts(wa_id,name) VALUES('${userInfo.messages[0].from}','${userInfo.contacts[0].profile.name}')`);
-            };
-            return results;
-        })
+
+            //if it's attendant message
+            if(userInfo["statuses"]){
+                
+                console.log(userInfo["statuses"]);
+                //save message
         
-        //save message
-        connection.query('INSERT INTO messages (from_wa_id, type, body) VALUES(?,?,?)', 
-        [userInfo.messages[0].from,userInfo.messages[0].type, userInfo.messages[0].text.body]);
+                connection.query('INSERT INTO messages (from_wa_id, type, body,to_wa) VALUES(?,?,?,?)', 
+                ['557481305345',userInfo.statuses[0].type, userInfo.statuses[0].type,userInfo.statuses[0].type]);
+                
+                console.log(userInfo.statuses[0].message);
 
-        //sent contact that sent message
-        io.emit('receivedMessage', userInfo)
-
-        res.status(200)
-    }
-
-    //if it's attendant message
-    if(userInfo["statuses"]){
-        
-        console.log(userInfo["statuses"]);
-        //save message
-/*
-        connection.query('INSERT INTO messages (from_wa_id, type, body,to_wa) VALUES(?,?,?,?)', 
-        ['557481305345',userInfo.statuses[0].type, userInfo.statuses[0].type,userInfo.statuses[0].type]);
-        
-        console.log(userInfo.statuses[0].message);*/
-
-        res.status(200);
-    } 
-})
+                res.status(200).send({message: "enviado"});
+            } 
+        }
+         catch (err) {
+            return res.status(400).send({ message: "erro json invalido", error: err })
+        }
+    });
 
 
 router.get("/wpp/last-message-client", (req, res) => {
@@ -200,9 +213,6 @@ router.get("/wpp/last-message-client", (req, res) => {
     SELECT contacts.name, contacts.status, messages.from_wa_id, messages.body, messages.type, messages.to_wa,messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.created_at IN ( SELECT MAX(messages.created_at) FROM messages GROUP BY messages.from_wa_id)
     `, function(err,result) {
         if(err) throw err;
-        
-        
-
         res.json(result);
         res.status(200);
     })
@@ -236,6 +246,40 @@ router.post('/wpp/client-data', (req,res) => {
     })
 })
 
+router.post('/teste', (req,res) => {
+    res.status(200).json({teste: 'teste'});
+})
 
+router.post('/wpp/send-message', (req,res) => {
+        const {clientNumber,  message} = req.body;
+        const { post } = require('request-promise');
+        
+        post({  
+            uri: 'https://api.zenvia.com/v2/channels/whatsapp/messages',
+                headers: {
+                    'X-API-TOKEN': 'p26Q_f6tj6utbkwtHmhzF-4mtvO0QK75ZJDV'
+                },
+            body: {
+                from: '557481305345',
+                to: '5531986372628',
+                contents: [{
+                  type: 'text',
+                  text: 'testemsg'
+                }]
+              },
+            json: true
+        }).then((response) => {
+            console.log('Response:', response);
+          })
+          .catch((error) => {
+            console.log('Error:', error);
+          });
+
+        
+        //save msg
+        connection.query('INSERT INTO messages (from_wa_id, to_wa, type, body) VALUES(?,?,?,?)',['557481305345', 'teste', 'text', 'teste']);
+        
+        res.status(200).json({ok: 'ok'});
+    })
 
 module.exports = router;
