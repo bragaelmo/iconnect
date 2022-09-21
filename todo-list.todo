@@ -1,0 +1,16 @@
+- Melhorias
+  1. Ajustar camadas de MVC para uma melhor abstracao
+  2. Ajustar requisicoes de POST para AXIOS
+
+- Demandas
+  1. Pesquisar conversas
+  2. Enviar mensagem
+  3. Notificacoes
+  4. Ajustar nome de perfil na tela inicial
+  5. Ajustar labels de "Em atendimento" e "Em espera"
+  6. Ajustar menu de perfil de conversa de atendimento
+  8. Retirar ou melhorar i de helper (ao lado do perfil)
+  9. Ajustar "esqueci minha senha"
+  10. Ajustar configuracoes de perfil
+  11. Ajustar menu Configuracoes com nova tela (token, )
+  12. Ajustar robo receptivo
