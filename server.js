@@ -32,9 +32,9 @@ io.on('end', function (){
 
 const io = require('socket.io')(server)
 
-io.on('connection',(socket)=>{
-  console.log('new connection', socket)
-})
+// io.on('connection',(socket)=>{
+//   console.log('new connection', socket)
+// })
 
 app.use(session({
   name : 'login',
@@ -43,7 +43,7 @@ app.use(session({
   saveUninitialized: true,
   cookie : {
           maxAge:(1000 * 60 * 100)
-  }      
+  }
 }));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());

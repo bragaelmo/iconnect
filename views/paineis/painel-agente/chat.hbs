@@ -267,7 +267,7 @@
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                                             <button type="button" class="btn btn-primary">Transferir</button>
                                                             </div>
-                                                            -->                                                                    
+                                                            -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -307,7 +307,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                
+
                                 <li class="mb-3 d-flex flex-row-reverse align-items-end">
                                     <div class="max-width-70 text-right">
                                         <div class="user-info mb-1">
@@ -318,7 +318,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                
+
                                 <li class="mb-3 d-flex flex-row align-items-end">
                                     <div class="max-width-70">
                                         <div class="user-info mb-1">
@@ -341,7 +341,7 @@
                                             <div class="message"> Estou precisando de ajuda com minha fatura.</div>
                                         </div>
                                     </div>
-                                </li> 
+                                </li>
 
                                 <li class="mb-3 d-flex flex-row align-items-end">
                                     <div class="max-width-70">
@@ -353,7 +353,7 @@
                                             <div class="message"> Estou precisando de ajuda com minha fatura.</div>
                                         </div>
                                     </div>
-                                </li> 
+                                </li>
 
                                 <li class="mb-3 d-flex flex-row align-items-end">
                                     <div class="max-width-70">
@@ -365,7 +365,7 @@
                                             <div class="message"> Estou precisando de ajuda com minha fatura.</div>
                                         </div>
                                     </div>
-                                </li> 
+                                </li>
 
                                 <li class="mb-3 d-flex flex-row align-items-end">
                                     <div class="max-width-70">
@@ -379,7 +379,7 @@
                                     </div>
                                 </li>  --}}
 
-                                
+
                             </ul>
                             <!-- Chat: body -->
                             <ul id="chatBodyEmpty" class="chat-history list-unstyled mb-0 py-lg-5 py-md-4 py-3 flex-grow-1">
@@ -391,7 +391,7 @@
                             <div id="chatFooterEmpty"></div>
                             <div id="chatFooter" class="chat-message">
                                 <form id="sendMessageToClient" action="/wpp/send-message" method="POST">
-                                    
+
                                     <div class="publisher bt-1 border-light">
                                         <i class="avatar avatar-xs icofont-brand-whatsapp" style="font-size: 30px; color: silver;"></i>
                                         <input id="textarea" class="form-control mb-1" placeholder="Escreva sua mensagem aqui...">
@@ -400,8 +400,8 @@
                                         <input type="file">
                                         </span>
                                         <button id="send-msg"class="btn btn-light btn-sm">
-                                            <i class="icofont-paper-plane" style="font-size: 25px;"></i> 
-                                        </button>                                        
+                                            <i class="icofont-paper-plane" style="font-size: 25px;"></i>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -557,12 +557,11 @@
 
     //render all messages that received
     socket.on("receivedMessage", (data) => {
-
         const date = new Date()
-        const clientName = data.contacts[0].profile.name.split(' ')[0];
+        const clientName = data.message.visitor.name;
         const timeMsg = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2,'0')}`
-        const clientNumber = data.messages[0].from;
-        const clientMsg = data.messages[0].text.body;
+        const clientNumber = data.message.from;
+        const clientMsg = data.message.contents[0].text;
 
         /**/
         renderInMessageVisualizer({clientNumber, clientName, timeMsg, clientMsg});
@@ -589,7 +588,7 @@
         }
 
     })
- 
+
     //render message chat
     socket.on('chatData', () => {
         console.log('CHEGOU');
@@ -602,7 +601,7 @@
         .then(res => res.json())
         .then(data => {
             for(clients of data){
-            
+
             const client = {
                 clientNumber: clients["from_wa_id"],
                 clientName: clients["name"],
@@ -623,13 +622,13 @@
 
             const hour = String(date.getHours()).padStart(2,'0');
             const minute = String(date.getMinutes()).padStart(2,'0');
-            
+
             obj.timeMsg = hour + ':' + minute;
         }
 
-        
 
-        
+
+
 
          $('#contact_area').prepend(
             `<li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
@@ -651,7 +650,7 @@
     function getMessages() {
         // Prior to getting your messages.
     shouldScroll = messages.scrollTop + messages.clientHeight === messages.scrollHeight;
-    
+
     // After getting your messages.
     if (!shouldScroll) {
         scrollToBottom();
@@ -672,11 +671,11 @@
 
         if(obj.timeMsg.indexOf('Z') != -1){
              const date = new Date(obj.timeMsg.replace('Z',''));
-            
-             const month = String(date.getMonth()); 
+
+             const month = String(date.getMonth());
              const hour = String(date.getHours()).padStart(2,'0');
              const minute = String(date.getMinutes()).padStart(2,'0');
-            
+
              obj.timeMsg = month + ',' + hour + ':' + minute;
         }
 
@@ -695,7 +694,7 @@
                                 </li>`)
         }
     }
-    
+
     function sendmsg(){
          msg = document.getElementById('textarea').value;
         //INSERIR MSG NO BANCO
@@ -718,17 +717,18 @@
                                         </li>`)
                 }
             scrollToBottom();
+            sendToClient(clientNumber, msg)
 
     }
-	
+
 
     ///ENVIAR MENSAGEM
    const form = document.getElementById('sendMessageToClient')
     form.addEventListener('submit', e => {
         e.preventDefault()
             sendmsg();
-            })
-        
+        })
+
          //enviar msg ao apertar entter
    /* $(document).on('keydown', function(event) {
     if(event.keyCode === 13) {
