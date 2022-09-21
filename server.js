@@ -1,10 +1,11 @@
 const fs = require("fs");
 // Carrega o certificado e a key necessários para a configuração do server https.
-
 const key = fs.readFileSync("./openssl/privkey.pem");
 const cert = fs.readFileSync("./openssl/cert.pem");
 const ca = fs.readFileSync("./openssl/chain.pem");
 
+const dotenv = require("dotenv");
+dotenv.config()
 
 const express = require('express');
 const session = require('express-session');
@@ -21,16 +22,14 @@ const server = require('https').createServer({key: key,
                                               ca: ca
                                             },app);
 
-
-
 //for socket
-module.exports = server;
+module.exports = server
 /*const io = require('./socket')
 io.on('end', function (){
   socket.disconnect(0);
 });*/
 
-const io = require('socket.io')(server)
+//const io = require('socket.io')(server)
 
 // io.on('connection',(socket)=>{
 //   console.log('new connection', socket)
@@ -62,7 +61,7 @@ for (let helper in helpers) {
 
 
 //routes
-const routes = require('./routes');
+const routes = require('./src/routes');
 const zenviaRoutes = require('./zenvia-routes');
 app.use([routes, zenviaRoutes]);
 
