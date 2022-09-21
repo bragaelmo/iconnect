@@ -5,6 +5,7 @@ const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
 const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient } = require('./services/zenvia');
+const { route } = require("./zenvia-routes");
 
 
 socketIO.on('db', (socket) => {
@@ -143,6 +144,15 @@ router.get("/wpp/last-message-client", async (req, res) => {
         res.status(400).json({erro: error.message});
     }
 })
+
+router.get('/painel-agente/config', (req,res) => {
+    res.render('./paineis/painel-agente/config')
+});
+
+//cadastro de agente
+router.get('/cadastro', (req,res) =>{
+    res.render('./paineis/painel-agente/cadastro')
+});
 
 router.post("/wpp/message-chat-client", async (req,res) => {
     const {wa_id} = req.body;

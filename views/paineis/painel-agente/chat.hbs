@@ -14,7 +14,7 @@
 ">
                             <div class="px-4 py-3 py-md-4">
                                 <div class="input-group mb-3">
-                                    <input type="text" class="form-control mb-1" placeholder="Pesquisar...">
+                                    <input id="searchbar" name="search" type="text" onkeyup="search_conversation()" class="form-control mb-1" placeholder="Pesquisar...">
                                 </div>
                                 <div class="nav nav-pills justify-content-between text-center" role="tablist">
                                     <a class="flex-fill rounded border-0 nav-link active" data-bs-toggle="tab" href="#em-espera" role="tab" aria-selected="false"><i class="icofont-ui-clock fs-5"></i> Em Espera</a>
@@ -631,7 +631,8 @@
 
 
          $('#contact_area').prepend(
-            `<li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
+            `<div class="msg">
+            <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
                 <a href="?wa_id=${obj.clientNumber}" class="d-flex">
                     <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
                     <div class="flex-fill ms-3 text-truncate">
@@ -640,7 +641,7 @@
                         ${obj.clientMsg}
                     </div>
                 </a>
-            </li>`
+            </li></div>`
         )
     }
 
@@ -736,5 +737,22 @@
     }
 
     });       */
+
+    
+    function search_conversation() {
+        let input = document.getElementById('searchbar').value
+        input=input.toLowerCase();
+        let x = document.getElementsByClassName('msg');
+        console.log(x)
+        
+            for (i = 0; i < x.length; i++) { 
+                if (!x[i].innerHTML.toLowerCase().includes(input)) {
+                    x[i].style.display="none";
+                }
+                else {
+                    x[i].style.display="list-item";                 
+                }
+            }
+}
 
 </script>
