@@ -13,9 +13,9 @@ socketIO.on('db', (socket) => {
 
 // AJUSTAR LOGIN
 router.get('/', (req,res) => {
-    console.log( 'LOGIN ??? / ' + req.session.login)
     if (req.session.login){
         res.redirect('/painel-agente');
+        return
     }
     res.render('login', {
         message: req.session.loginErr,
@@ -34,12 +34,6 @@ router.get('/logout', (req, res) => {
 
 
 //ROTAS DE LOGIN E PERMISSÃO ============================================
-
-function errorLogin(req, res){
-    console.log("Usuário não identificado!")
-    res.redirect('/');
-}
-//método post do login
 router.post('/login', async (req, res) => {
     var email = req.body.email;
     var password = req.body.password;
@@ -82,9 +76,7 @@ router.get("/userPermission", async (req, res) => {
     }
     res.redirect('/');
 })
-
 //FIM ROTAS DE LOGIN E PERMISSÃO ========================================
-
 
 // ROTAS DO PAINEL DE AGENTE ============================================
 router.get('/painel-agente', (req,res) => {
@@ -108,9 +100,6 @@ router.get('/painel-agente', (req,res) => {
 
 
 //FIM ROTAS DO PAINEL DE AGENTE ============================================
-
-
-
 
 //webhook
 router.post("/webhook", async (req,res) => {
@@ -142,7 +131,6 @@ router.post("/webhook", async (req,res) => {
         return res.status(400).send({ message: "erro json invalido", error: err.message })
     }
 });
-
 
 router.get("/wpp/last-message-client", async (req, res) => {
     //render messages of db in messages visualizer
