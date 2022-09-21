@@ -31,6 +31,7 @@ function conectiondb(){
 const router = require('express').Router(); //express
 const connection = require('./db');         //db
 const io = require('./socket');             //socket
+const { route } = require("./zenvia-routes");
 
 
 //conexão com banco de dados
@@ -138,6 +139,10 @@ router.get('/painel-agente', (req,res) => {
     }else{
         res.redirect('/');
     }
+});
+
+router.get('/painel-agente/config', (req,res) => {
+    res.render('./paineis/painel-agente/config')
 });
 
 
