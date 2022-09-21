@@ -4,6 +4,8 @@ const key = fs.readFileSync("./openssl/privkey.pem");
 const cert = fs.readFileSync("./openssl/cert.pem");
 const ca = fs.readFileSync("./openssl/chain.pem");
 
+const dotenv = require("dotenv");
+dotenv.config()
 
 const express = require('express');
 const session = require('express-session');
