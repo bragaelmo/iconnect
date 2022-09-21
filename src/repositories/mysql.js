@@ -2,10 +2,10 @@ const mysql = require("mysql");
 
 exports.dbConnect = () => {
   const db = mysql.createConnection({
-      host: "pag.rexinternet.com.br",
-      user: "rex",
-      password: "MmM@@885522",
-      database: "iconect_atendimento",
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_DATABASE,
       charset: "utf8mb4",
       debug: false
   });
