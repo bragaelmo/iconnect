@@ -145,6 +145,10 @@ router.get('/painel-agente/config', (req,res) => {
     res.render('./paineis/painel-agente/config')
 });
 
+//cadastro de agente
+router.get('/cadastro', (req,res) =>{
+    res.render('./paineis/painel-agente/cadastro')
+});
 
 //FIM ROTAS DO PAINEL DE AGENTE ============================================
 
