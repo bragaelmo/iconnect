@@ -4,8 +4,10 @@
     <div class="main px-lg-4 px-md-4">
         <!-- Body: Header -->
         {{> header}}
+        <p>{{ sessionName }}</p>
         <!-- Body: Body -->
         <div class="body d-flex">
+            <p>{{ sessionName }}</p>
             <div class="container-xxl p-0">
                 <div class="row g-0">
                     <div class="col-12 d-flex">
@@ -52,7 +54,7 @@
                             </div>
                         </div>
                         <!-- Card: -->
-                        <div class="card card-chat-body border-0  w-100 px-4 px-md-5 py-3 py-md-4" style="height: 86vh" >
+                        <div class="card card-chat-body border-0  w-100 px-4 px-md-5 py-3 py-md-4" style="height: 79vh" >
                             <!-- Chat: Header -->
                             <div class="chat-header d-flex justify-content-between align-items-center border-bottom pb-3">
                                 <div class="row">
@@ -626,23 +628,29 @@
             obj.timeMsg = hour + ':' + minute;
         }
 
-
-
-
-
-         $('#contact_area').prepend(
+        $('#contact_area').prepend(
             `<div class="msg">
-            <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
-                <a href="?wa_id=${obj.clientNumber}" class="d-flex">
-                    <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
-                    <div class="flex-fill ms-3 text-truncate">
-                        <h6 class="d-flex justify-content-between mb-0"><span>${obj.clientName}</span> <small class="msg-time">${obj.timeMsg}</small></h6>
-                        <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i></span>
-                        ${obj.clientMsg}
-                    </div>
-                </a>
-            </li></div>`
+                <li onclick="changeStatus(${obj.clientNumber})" class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
+                    <a href="?wa_id=${obj.clientNumber}" class="d-flex">
+                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
+                        <div class="flex-fill ms-3 text-truncate">
+                            <h6 class="d-flex justify-content-between mb-0"><span><b>${obj.clientName}</b></span> <small class="msg-time"><b>${obj.timeMsg}</b></small></h6>
+                            <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i></span>
+                            ${obj.clientMsg}
+                        </div>
+                    </a>
+                </li>
+            </div>`
         )
+    }
+
+    function changeStatus(clientNumber){
+        alert( 'IOAOAOAOAOAOAO o TELSFONE ' + clientNumber)
+        // FAZER UPDATE NA TABELA MESSAGE ALTERANDO O STATUS PARA EM_ATENDIMENTO
+        // MENSAGEM NOVA = EM ESPERA
+        // ABRIU A MENSAGEM = EM ATENDIMENTO
+       // e.preventDefault()
+
     }
 
 
@@ -650,25 +658,28 @@
 
     function getMessages() {
         // Prior to getting your messages.
-    shouldScroll = messages.scrollTop + messages.clientHeight === messages.scrollHeight;
+        shouldScroll = messages.scrollTop + messages.clientHeight === messages.scrollHeight;
 
-    // After getting your messages.
-    if (!shouldScroll) {
-        scrollToBottom();
-    }
+        // After getting your messages.
+        if (!shouldScroll) {
+            scrollToBottom();
+        }
     }
 
     function scrollToBottom() {
-    messages.scrollTop = messages.scrollHeight;
+        console.log( 'SCROOOOLLLL ' + document.getElementById('chatBody').scrollHeight)
+        //window.scrollTo(0, document.getElementById('chatBody').scrollHeight);
+        messages.scrollToBottom = messages.scrollHeight;
     }
 
-    scrollToBottom();
+    //scrollToBottom();
 
     //setInterval(getMessages, 5000);
 
 
     function renderMessageInChat(obj){
         const chatBody = document.getElementById('chatBody');
+
 
         if(obj.timeMsg.indexOf('Z') != -1){
              const date = new Date(obj.timeMsg.replace('Z',''));
@@ -681,18 +692,21 @@
         }
 
         if(obj.isClient){
+            // getMessages()
             chatBody.insertAdjacentHTML("beforeend",`
-                    <li class="mb-3 d-flex flex-row align-items-end">
-                                    <div class="max-width-70">
-                                        <div class="user-info mb-1">
-                                            <span class="text-muted small">
-                                            ${obj.timeMsg},<br>${obj.clientName}:</span>
-                                        </div>
-                                        <div class="card border-0 p-3">
-                                            <div class="message"> ${obj.clientMsg}</div>
-                                        </div>
-                                    </div>
-                                </li>`)
+                <li class="mb-3 d-flex flex-row align-items-end">
+                    <div class="max-width-70">
+                        <div class="user-info mb-1">
+                            <span class="text-muted small">
+                                ${obj.timeMsg},<br> ${obj.clientName}:
+                            </span>
+                        </div>
+                        <div class="card border-0 p-3">
+                            <div class="message"> ${obj.clientMsg}</div>
+                        </div>
+                    </div>
+                </li>`
+            )
         }
     }
 
@@ -738,19 +752,19 @@
 
     });       */
 
-    
+
     function search_conversation() {
         let input = document.getElementById('searchbar').value
         input=input.toLowerCase();
         let x = document.getElementsByClassName('msg');
         console.log(x)
-        
-            for (i = 0; i < x.length; i++) { 
+
+            for (i = 0; i < x.length; i++) {
                 if (!x[i].innerHTML.toLowerCase().includes(input)) {
                     x[i].style.display="none";
                 }
                 else {
-                    x[i].style.display="list-item";                 
+                    x[i].style.display="list-item";
                 }
             }
 }
