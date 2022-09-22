@@ -198,7 +198,7 @@ a:not([href]):not([class]),a:not([href]):not([class]):hover{
 pre,code,kbd,samp{
     font-family:var(--bs-font-monospace);
     font-size:1em;
-    direction:ltr 
+    direction:ltr
     /* rtl:ignore */
     ;
     unicode-bidi:bidi-override
@@ -3974,7 +3974,7 @@ textarea.form-control-lg{
     float:left;
     padding-right:.5rem;
     color:#6c757d;
-    content:var(--bs-breadcrumb-divider, "/") 
+    content:var(--bs-breadcrumb-divider, "/")
     /* rtl: var(--bs-breadcrumb-divider, "/") */
 }
 .breadcrumb-item.active{
@@ -4966,7 +4966,7 @@ textarea.form-control-lg{
 .popover{
     position:absolute;
     top:0;
-    left:0 
+    left:0
     /* rtl:ignore */
     ;
     z-index:1070;
@@ -5255,7 +5255,7 @@ textarea.form-control-lg{
 }
 @keyframes spinner-border{
     to{
-        transform:rotate(360deg) 
+        transform:rotate(360deg)
         /* rtl:ignore */
     }
 }
@@ -18063,7 +18063,7 @@ body.rtl_mode table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first
     overflow-y:scroll;
     scrollbar-width:none;
     -ms-overflow-style:none;
-    height:100vh;
+    height:68vh;
     overflow-y:auto
 }
 .card-chat-body .chat-history::-webkit-scrollbar{
@@ -18260,7 +18260,7 @@ body.rtl_mode table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first
 .file-group {
     position: relative;
     overflow: hidden;
-} 
+}
 
 .publisher-btn {
     background-color: transparent;
@@ -18271,12 +18271,11 @@ body.rtl_mode table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first
     overflow: -moz-hidden-unscrollable;
     -webkit-transition: .2s linear;
     transition: .2s linear;
-} 
+}
 
 .file-group input[type="file"] {
     position: absolute;
     opacity: 0;
-    z-index: -1; 
+    z-index: -1;
     width: 20px;
 }
- 
