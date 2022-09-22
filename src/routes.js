@@ -155,7 +155,13 @@ router.get('/cadastro', (req,res) =>{
 });
 //cadastro
 router.post('/cadastro-usuario', async (req,res) =>{
-    await saveusers(db,req.body.email,req.body.senha,req.body.nome)
+    try {
+        await saveusers(db,req.body.email,req.body.senha,req.body.nome)
+        res.status(200).json({ok: 'ok'});
+    } catch (error){
+        res.status(400).json({erro: error.message});
+    }
+    
 });
 
 router.post("/wpp/message-chat-client", async (req,res) => {

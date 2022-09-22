@@ -86,9 +86,9 @@ exports.sendMessageToClient = async (db, clientNumber, message ) => {
     db.query(sql, [fromNumber, clientNumber, 'text', message]);
 }
 
-exports.saveusers = async (db) => {
-  const sqlInsert = 'INSERT INTO `users`(`email`, `password`, `fullName`, `stats`) VALUES (?,?,?,`pendente`)'
+exports.saveusers = async (db,email,senha,user) => {
+  const sqlInsert = 'INSERT INTO `users`(`email`, `password`, `fullName`, `status`,`permission`) VALUES (?,?,?,?,0)'
   db.query(sqlInsert,
-    [req.body.email,req.body.senha,req.body.nome]);
+    [email,senha,user,'pendente']);
 
 }
