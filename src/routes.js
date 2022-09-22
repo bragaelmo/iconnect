@@ -4,7 +4,7 @@ const db = dbConnect();
 const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
-const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient } = require('./services/zenvia');
+const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers } = require('./services/zenvia');
 const { route } = require("../zenvia-routes");
 
 
@@ -154,8 +154,8 @@ router.get('/cadastro', (req,res) =>{
     res.render('./paineis/painel-agente/cadastro')
 });
 //cadastro
-router.post('/cadastro-usuario', (req,res) =>{
-    res.send('Email:' + req.body.email + req.body.senha + req.body.nome)
+router.post('/cadastro-usuario', async (req,res) =>{
+    await saveusers(db,req.body.email,req.body.senha,req.body.nome)
 });
 
 router.post("/wpp/message-chat-client", async (req,res) => {
