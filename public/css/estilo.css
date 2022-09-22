@@ -15867,6 +15867,15 @@ table.dataTable>tbody>tr.child ul.dtr-details{
     opacity:0;
     border-width:5px
 }
+.pulse .badge {
+    position: relative;
+    top: -20px;
+    left: -25px;
+    border: 1px solid black;
+    border-radius: 50%;
+    color:green;
+}
+
 .pulse::after{
     display:none
 }

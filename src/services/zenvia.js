@@ -85,3 +85,10 @@ exports.sendMessageToClient = async (db, clientNumber, message ) => {
   const sql = 'INSERT INTO messages (from_wa_id, to_wa, type, body) VALUES(?,?,?,?)'
     db.query(sql, [fromNumber, clientNumber, 'text', message]);
 }
+
+exports.saveusers = async (db,email,senha,user) => {
+  const sqlInsert = 'INSERT INTO `users`(`email`, `password`, `fullName`, `status`,`permission`) VALUES (?,?,?,?,0)'
+  db.query(sqlInsert,
+    [email,senha,user,'pendente']);
+
+}

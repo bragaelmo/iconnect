@@ -97,6 +97,7 @@
                                                                         </ul>
                                                                     </div>
                                                                 </div>
+                                                                <div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -589,6 +590,24 @@
 
         }
 
+        //Adicionar notificação
+        $('#notification').prepend(
+          `<li class="py-2 mb-1 border-bottom n${clientNumber}">
+            <a href="?wa_id=${clientNumber}" class="d-flex">
+            <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${clientName}&background=random&color=ff0000&bold=true">
+                <div class="flex-fill ms-2">
+                     <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">${clientName}</span>timeMsgnpm<small></small></p>
+                    <span class="">${clientMsg}</span>
+                </div>
+            </a>
+          </li>`
+        )
+
+        //Parte para adiconar no sininho se tem notificação
+        var not = parseInt(document.getElementById('noti').innerText);
+        not = not + 1;
+        document.getElementById('noti').innerHTML = not;
+        document.getElementById('noti2').innerHTML = not;
     })
 
     //render message chat
@@ -642,6 +661,7 @@
                 </li>
             </div>`
         )
+
     }
 
     function changeStatus(clientNumber){
@@ -768,5 +788,6 @@
                 }
             }
 }
+
 
 </script>
