@@ -94,6 +94,25 @@ router.get('/painel-agente', (req,res) => {
     {
         title:'Agente Home - iConect',
         container:container,
+        sidebarHome: sidebarHome,
+        sidebars: 'aget'
+    });
+
+});
+router.get('/painel-supervisor', (req,res) => {
+    // ------------- VER ESSA PARTE
+
+    if(!req.session.login){
+        res.redirect('/');
+        return
+    }
+
+    var sidebarHome = "active";
+    var container = false;
+    res.render('./paineis/painel-agente/chat',
+    {
+        title:'Agente Home - iConect',
+        container:container,
         sidebarHome: sidebarHome
     });
 
@@ -157,7 +176,7 @@ router.get('/cadastro', (req,res) =>{
 router.post('/cadastro-usuario', async (req,res) =>{
     try {
         await saveusers(db,req.body.email,req.body.senha,req.body.nome)
-        res.status(200).json({ok: 'ok'});
+        res.send(" <script>alert('Cadastro feito com sucesso'); window.location.href = '/'; </script>");
     } catch (error){
         res.status(400).json({erro: error.message});
     }

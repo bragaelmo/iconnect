@@ -193,6 +193,13 @@
             text: 'Email ou senha incorreto!'
             })
           }
+           function cadastromsg(){
+           Swal.fire({
+              title:'Sucesso!',
+              text:'Cadastro realizado com sucesso!',
+              icon:'success'
+           })
+          }
           
           if({{message}}){
             msgErroLogin();
