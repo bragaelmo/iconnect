@@ -12,10 +12,10 @@ exports.dbConnect = () => {
 
   db.connect((err) => {
       if (err) {
-          console.log('Erro connecting to database... ', err.message)
+          console.log('Erro ao conectar no banco de dados... ', err.message)
           return
       }
-      console.log('Connection established!')
+      console.log('Conexao estabelecida!')
   });
 
   return db;

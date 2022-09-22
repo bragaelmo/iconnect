@@ -98,6 +98,6 @@ function getStage(user){
 console.log(getStage("user1"))
 
 //inicia o servidor
-server.listen(3000, function(){
-  console.log('server listening in port 3000');
+server.listen(process.env.PORT, function(){
+  console.log('Servidor iniciado na porta ' + process.env.PORT);
 });
