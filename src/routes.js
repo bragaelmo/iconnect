@@ -157,7 +157,7 @@ router.get('/cadastro', (req,res) =>{
 router.post('/cadastro-usuario', async (req,res) =>{
     try {
         await saveusers(db,req.body.email,req.body.senha,req.body.nome)
-        res.status(200).json({ok: 'ok'});
+        res.send(" <script>alert('Cadastro feito com sucesso'); window.location.href = '/'; </script>");
     } catch (error){
         res.status(400).json({erro: error.message});
     }
