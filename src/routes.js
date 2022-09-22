@@ -78,7 +78,14 @@ router.get("/userPermission", async (req, res) => {
     res.redirect('/');
 })
 //FIM ROTAS DE LOGIN E PERMISSÃO ========================================
-
+function getSessionStrings(req){
+    var name = req.session.name.split(' ')[0]
+    return {
+        sessionName: name,
+        sessionFullName: req.session.name,
+        sessionEmail: req.session.login,
+    }
+}
 // ROTAS DO PAINEL DE AGENTE ============================================
 router.get('/painel-agente', (req,res) => {
     // ------------- VER ESSA PARTE
@@ -94,8 +101,32 @@ router.get('/painel-agente', (req,res) => {
     {
         title:'Agente Home - iConect',
         container:container,
+        sidebarHome: sidebarHome,
+        sidebars: 'aget'
+    });
+
+});
+router.get('/painel-supervisor', (req,res) => {
+    // ------------- VER ESSA PARTE
+
+    if(!req.session.login){
+        res.redirect('/');
+        return
+    }
+
+    var sidebarHome = "active";
+    var container = false;
+    res.render('./paineis/painel-agente/chat',
+    {
+        title:'Agente Home - iConect',
+        container:container,
         sidebarHome: sidebarHome
     });
+
+});
+//gerenciamento de novos agentes
+router.get('/painel-supervisor/gerenciamento', (req,res) => {
+    res.render('./paineis/painel-supervisor/gerenciamento')
 
 });
 
@@ -146,12 +177,18 @@ router.get("/wpp/last-message-client", async (req, res) => {
 })
 
 router.get('/painel-agente/config', (req,res) => {
-    res.render('./paineis/painel-agente/config')
+    var name = req.session.name.split(' ')[0]
+    res.render('./paineis/painel-agente/config', {
+        ...getSessionStrings(req)
+    })
 });
 
 //cadastro de agente
-router.get('/cadastro', (req,res) =>{
-    res.render('./paineis/painel-agente/cadastro')
+router.get('/cadastro', (req,res) => {
+    var name = req.session.name.split(' ')[0]
+    res.render('./paineis/painel-agente/cadastro', {
+        ...getSessionStrings(req)
+    })
 });
 //cadastro
 router.post('/cadastro-usuario', async (req,res) =>{

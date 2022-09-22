@@ -26,7 +26,7 @@ exports.saveMessage = async (db, from, message) => {
 }
 
 exports.lastMessage = async (db) => {
-  const sql = 'SELECT contacts.name, contacts.status, messages.from_wa_id, messages.body, messages.type, messages.to_wa,messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.created_at IN ( SELECT MAX(messages.created_at) FROM messages GROUP BY messages.from_wa_id)'
+  const sql = "SELECT contacts.name, contacts.status, messages.from_wa_id, messages.body, messages.type, messages.to_wa, messages.status, messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.status = 'EM_ESPERA' AND messages.created_at IN ( SELECT MAX(messages.created_at) FROM messages GROUP BY messages.from_wa_id)"
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, function(err,results) {
@@ -88,7 +88,6 @@ exports.sendMessageToClient = async (db, clientNumber, message ) => {
 
 exports.saveusers = async (db,email,senha,user) => {
   const sqlInsert = 'INSERT INTO `users`(`email`, `password`, `fullName`, `status`,`permission`) VALUES (?,?,?,?,0)'
-  db.query(sqlInsert,
-    [email,senha,user,'pendente']);
-
+    db.query(sqlInsert,
+      [email,senha,user,'pendente']);
 }
