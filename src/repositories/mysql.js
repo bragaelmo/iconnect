@@ -15,7 +15,7 @@ exports.dbConnect = () => {
           console.log('Erro ao conectar no banco de dados... ', err.message)
           return
       }
-      console.log('Conexao estabelecida!')
+      console.log('Banco de dados conectado!')
   });
 
   return db;
