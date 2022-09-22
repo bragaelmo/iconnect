@@ -153,6 +153,10 @@ router.get('/painel-agente/config', (req,res) => {
 router.get('/cadastro', (req,res) =>{
     res.render('./paineis/painel-agente/cadastro')
 });
+//cadastro
+router.post('/cadastro-usuario', (req,res) =>{
+    res.send('Email:' + req.body.email + req.body.senha + req.body.nome)
+});
 
 router.post("/wpp/message-chat-client", async (req,res) => {
     const {wa_id} = req.body;
