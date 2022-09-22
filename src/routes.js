@@ -124,6 +124,11 @@ router.get('/painel-supervisor', (req,res) => {
     });
 
 });
+//gerenciamento de novos agentes
+router.get('/painel-supervisor/gerenciamento', (req,res) => {
+    res.render('./paineis/painel-supervisor/gerenciamento')
+
+});
 
 
 //FIM ROTAS DO PAINEL DE AGENTE ============================================
