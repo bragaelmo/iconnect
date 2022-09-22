@@ -5,7 +5,7 @@ const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
 const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient } = require('./services/zenvia');
-const { route } = require("./zenvia-routes");
+const { route } = require("../zenvia-routes");
 
 
 socketIO.on('db', (socket) => {
