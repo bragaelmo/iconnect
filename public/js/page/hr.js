@@ -40,8 +40,8 @@ $(function() {
                 }
             }]
         }
-        var chart = new ApexCharts( document.querySelector("#apex-MainCategories"),options);        
-        chart.render();
+        //var chart = new ApexCharts( document.querySelector("#apex-MainCategories"),options);        
+        //chart.render();
     }); 
 
     // Employees Analytics
@@ -114,8 +114,8 @@ $(function() {
             }
         };
 
-        var chart = new ApexCharts(document.querySelector("#apex-emplyoeeAnalytics"), options);
-        chart.render();
+        //var chart = new ApexCharts(document.querySelector("#apex-emplyoeeAnalytics"), options);
+        //chart.render();
     });  
 
      // Hr Resorce
@@ -172,8 +172,8 @@ $(function() {
             }
         };
 
-        var chart = new ApexCharts(document.querySelector("#hiringsources"), options);
-        chart.render();
+        //var chart = new ApexCharts(document.querySelector("#hiringsources"), options);
+        //chart.render();
     });
 });
 
