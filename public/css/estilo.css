@@ -18066,6 +18066,14 @@ body.rtl_mode table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first
         max-width:100%
     }
 }
+a#em-atendimento-style.active {
+    background-color: #FFBA20;
+}
+button#buttonMoverAtendimento {
+    background-color: #FFBA20;
+    color: black;
+}
+
 .card-chat-body .chat-history{
     overflow-y:auto;
     overflow-y:scroll;

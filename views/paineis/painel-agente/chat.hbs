@@ -16,15 +16,14 @@
                 <div class="row g-0">
                     <div class="col-12 d-flex">
                         <!-- Card: -->
-                        <div class="card card-chat border-right border-top-0 border-bottom-0  w380" style="transform: translate(0px, -50px);
-">
+                        <div class="card card-chat border-right border-top-0 border-bottom-0  w380" style="transform: translate(0px, -50px);">
                             <div class="px-4 py-3 py-md-4">
                                 <div class="input-group mb-3">
                                     <input id="searchbar" name="search" type="text" onkeyup="search_conversation()" class="form-control mb-1" placeholder="Pesquisar...">
                                 </div>
                                 <div class="nav nav-pills justify-content-between text-center" role="tablist">
                                     <a class="flex-fill rounded border-0 nav-link active" data-bs-toggle="tab" href="#em-espera" role="tab" aria-selected="false"><i class="icofont-ui-clock fs-5"></i> Em Espera</a>
-                                    <a class="flex-fill rounded border-0 nav-link" data-bs-toggle="tab" href="#em-atendimento" role="tab" aria-selected="true"><i class="icofont-ui-chat fs-5"></i> Em Atedimento</a>
+                                    <a class="flex-fill rounded border-0 nav-link" id="em-atendimento-style" data-bs-toggle="tab" href="#em-atendimento" role="tab" aria-selected="true"><i class="icofont-ui-chat fs-5"></i> Em Atendimento</a>
                                 </div>
                             </div>
                             <div class="tab-content border-top">
@@ -54,7 +53,7 @@
                             <!-- Chat: Header -->
                             <div class="chat-header d-flex justify-content-between align-items-center border-bottom pb-3">
                                 <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-10">
                                         <!-- Body: Header -->
                                         <div class="header">
                                             <nav class="navbar py-4">
@@ -70,7 +69,7 @@
                                                                 <a href="./" title="Home"><i class="icofont-arrow-left fs-4"></i></a>
                                                                 <img id="chat-client-photo" class="ms-3 avatar rounded-circle" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=kevin&background=random&color=ff0000&bold=true" width="35">
                                                                 <div style="transform: translateY(4px);">
-                                                                    <div class="btn-group  dropend">
+                                                                    <div class="btn-group dropend">
                                                                         <a style="border: none; font-size: 18px; cursor: pointer;"class="dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                                         <span id="chat-client-name">Carregando...</span>
                                                                         </a>
@@ -93,7 +92,6 @@
                                                                         </ul>
                                                                     </div>
                                                                 </div>
-                                                                <div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -115,8 +113,48 @@
                                         </div>
                                         <!-- Body: Body -->
                                     </div>
+                                    <div class="col-2">
+                                        <!-- Body: Header -->
+                                        <div class="header">
+                                            <nav class="navbar py-4">
+                                                <div class="container-xxl">
+                                                    <!-- main menu Search-->
+                                                    <div id="buttonMoverAtendimento" class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
+                                                        <div class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
+                                                            <div class="input-group flex-nowrap input-group-lg">
+                                                                <div style="transform: translateY(-6px);">
+                                                                    <button class="btn btn-secondary" id="buttonMoverAtendimento">
+                                                                        <span style="font-size: 15px;" >Atendimento</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                        </div>
+                                        <!-- Body: Body -->
+                                    </div>
                                     <div class="col-12">
                                         <div class="d-flex align-items-center">
+                                            {{!-- MODAL CLOSE MESSAGE --}}
+                                            <div class="modal fade" id="modalCloseMessage" tabindex="-1" aria-labelledby="modalCloseMessage" style="display: none;" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header" style="background-color: #075E54; color: white; font-weight: bold;">
+                                                            <h5 class="modal-title" id="modalCloseMessage"> <i class="icofont-ui-chat fs-5"></i> Deseja mover o atendimento?</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body" id="bodyModalCloseMessage">
+                                                            <span id="spanInBodyModalCloseMessage"></span><b><span style="color: #8B0000"><i class="icofont-ui-chat fs-5"></i> Em Atendimento</span></b> ?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                                            <button type="button" class="btn btn-primary">Mover</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <!-- Modal Tranferir-->
                                             <div class="modal fade" id="modaltransferir" tabindex="-1" aria-labelledby="modaltransferir" style="display: none;" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -553,9 +591,10 @@
     //var server = "https://pag.rexinternet.com.br:3000";
     var server = "https://localhost:3000";
     var socket = io.connect(server);
-
+    console.log('CARREGANDO MESSAGE ORIGEM')
     //render all messages that received
     socket.on("receivedMessage", (data) => {
+        console.log('NA PAGINA PANEEEEL')
         const date = new Date()
         const clientName = data.message.visitor.name;
         const timeMsg = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2,'0')}`
@@ -582,8 +621,7 @@
         if(clientNumber == numberChat){
             const chatBody = document.getElementById('chatBody');
 
-            renderMessageInChat({clientName, timeMsg, clientMsg, isClient: true})
-
+            // renderMessageInChat({clientName, timeMsg, clientMsg, isClient: true})
         }
 
         //Adicionar notificação
@@ -612,6 +650,7 @@
     })
 
     socket.emit('ready');
+
 
     //render msg of DB
     fetch('https://localhost:3000/wpp/last-message-client')
@@ -644,9 +683,9 @@
         }
 
         $('#contact_area').prepend(
-            `<div class="msg">
-                <li onclick="changeStatus(${obj.clientNumber})" class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
-                    <a href="?wa_id=${obj.clientNumber}" class="d-flex">
+            `<div class="msg")">
+                <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
+                    <a onclick="changeStatus(${obj.clientNumber})" class="d-flex">
                         <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
                         <div class="flex-fill ms-3 text-truncate">
                             <h6 class="d-flex justify-content-between mb-0"><span><b>${obj.clientName}</b></span> <small class="msg-time"><b>${obj.timeMsg}</b></small></h6>
@@ -658,21 +697,6 @@
             </div>`
         )
 
-    }
-
-    function changeStatus(clientNumber){    
-        //alert( 'IOAOAOAOAOAOAO o TELSFONE ' + clientNumber)
-        // FAZER UPDATE NA TABELA MESSAGE ALTERANDO O STATUS PARA EM_ATENDIMENTO
-          fetch('https://localhost:3000/wpp/updatestatus',{
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({clientNumber: '123456'}),
-              }).then(res => res.json())
-              .catch((res) => console.log(res));
-          //e.preventDefault()
     }
 
 
@@ -716,11 +740,11 @@
         if(obj.isClient){
             // getMessages()
             chatBody.insertAdjacentHTML("beforeend",`
-                <li class="mb-3 d-flex flex-row align-items-end">
+                <li class="mb-3 d-flex flex-row align-items-end" id="messageOpen">
                     <div class="max-width-70">
                         <div class="user-info mb-1">
                             <span class="text-muted small">
-                                ${obj.timeMsg},<br> ${obj.clientName}:
+                               ${obj.timeMsg},<br> ${obj.clientName}:
                             </span>
                         </div>
                         <div class="card border-0 p-3">
@@ -789,7 +813,7 @@
                     x[i].style.display="list-item";
                 }
             }
-}
+    }
 
 
 </script>
