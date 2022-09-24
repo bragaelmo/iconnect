@@ -67,13 +67,10 @@
             queryNumbers[1].remove();
         }
 
-        //render mensagem in chat if exist
-        var query = location.search.slice(1);
-        var numberChat = query.split('=')[1];
-        console.log('numberChat ' + numberChat)
-        console.log('clientNumber ' + clientNumber)
-
-        if(clientNumber == numberChat){
+        //render mensagem in chat if chat is open
+        const chatPhone = document.getElementById("chat-client-phone").innerText
+        console.log('chatPhone ' + chatPhone)
+        if(clientNumber == chatPhone){
             renderMessageInChat({clientName, timeMsg, clientMsg, isClient: true})
         }
 
@@ -100,7 +97,6 @@
 
     function renderMessageInChat(obj){
         const chatBody = document.getElementById('chatBody');
-        console.log('TESTANDO AQUI ' + JSON.stringify(obj))
 
         if(obj.timeMsg.indexOf('Z') != -1){
              const date = new Date(obj.timeMsg.replace('Z',''));
@@ -263,6 +259,7 @@
 
         //render info in chat
         document.getElementById("chat-client-name").innerText = name;
+        document.getElementById("chat-client-phone").innerText = clientNumber;
         document.getElementById("chat-client-photo").src = `https://ui-avatars.com/api/?name=${name}&background=random&color=ff0000&bold=true`;
 
         const chatBody = document.getElementById('chatBody');
