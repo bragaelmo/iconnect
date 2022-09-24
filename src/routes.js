@@ -102,7 +102,8 @@ router.get('/painel-agente', (req,res) => {
         title:'Agente Home - iConect',
         container:container,
         sidebarHome: sidebarHome,
-        sidebars: 'aget'
+        sidebars: 'aget',
+        ...getSessionStrings(req)
     });
 
 });
@@ -198,7 +199,7 @@ router.post('/cadastro-usuario', async (req,res) =>{
     } catch (error){
         res.status(400).json({erro: error.message});
     }
-    
+
 });
 
 router.post("/wpp/message-chat-client", async (req,res) => {
