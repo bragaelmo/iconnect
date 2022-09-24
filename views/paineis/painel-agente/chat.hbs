@@ -42,7 +42,7 @@
                                     </ul>
                                 </div>
                                 <div class="tab-pane fade" id="em-atendimento" role="tabpanel">
-                                    <ul class="list-unstyled list-group list-group-custom list-group-flush mb-0">
+                                    <ul id="contact_area_atendimento" class="list-unstyled list-group list-group-custom list-group-flush mb-0">
                                         <!-- Carrega cv novas-->
                                     </ul>
                                 </div>
@@ -119,7 +119,7 @@
                                             <nav class="navbar py-4">
                                                 <div class="container-xxl">
                                                     <!-- main menu Search-->
-                                                    <div id="buttonMoverAtendimento" class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
+                                                    <div id="buttonMoverAtendimento" style="display:none;" class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
                                                         <div class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
                                                             <div class="input-group flex-nowrap input-group-lg">
                                                                 <div style="transform: translateY(-6px);">
@@ -150,7 +150,7 @@
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                            <button type="button" class="btn btn-primary">Mover</button>
+                                                            <button type="button" id="buttonMover" class="btn btn-primary">Mover</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -589,60 +589,7 @@
 
 <script>
     //var server = "https://pag.rexinternet.com.br:3000";
-    var server = "https://localhost:3000";
-    var socket = io.connect(server);
-    console.log('CARREGANDO MESSAGE ORIGEM')
-    //render all messages that received
-    socket.on("receivedMessage", (data) => {
-        console.log('NA PAGINA PANEEEEL')
-        const date = new Date()
-        const clientName = data.message.visitor.name;
-        const timeMsg = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2,'0')}`
-        const clientNumber = data.message.from;
-        const clientMsg = data.message.contents[0].text;
 
-        /**/
-        renderInMessageVisualizer({clientNumber, clientName, timeMsg, clientMsg});
-
-        //exist same contact in display messager? if exist delete
-        var queryNumbers = document.querySelectorAll(`.n${clientNumber}`);
-        console.log(queryNumbers);
-        console.log('--------');
-
-        if(queryNumbers.length >= 1){
-            queryNumbers[1].remove();
-        }
-
-        //render mensagem in chat if exist
-        var query = location.search.slice(1);
-        var numberChat = query.split('=')[1];
-
-
-        if(clientNumber == numberChat){
-            const chatBody = document.getElementById('chatBody');
-
-            // renderMessageInChat({clientName, timeMsg, clientMsg, isClient: true})
-        }
-
-        //Adicionar notificação
-        $('#notification').prepend(
-          `<li class="py-2 mb-1 border-bottom n${clientNumber}">
-            <a href="?wa_id=${clientNumber}" class="d-flex">
-            <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${clientName}&background=random&color=ff0000&bold=true">
-                <div class="flex-fill ms-2">
-                     <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">${clientName}</span>timeMsgnpm<small></small></p>
-                    <span class="">${clientMsg}</span>
-                </div>
-            </a>
-          </li>`
-        )
-
-        //Parte para adiconar no sininho se tem notificação
-        var not = parseInt(document.getElementById('noti').innerText);
-        not = not + 1;
-        document.getElementById('noti').innerHTML = not;
-        document.getElementById('noti2').innerHTML = not;
-    })
 
     //render message chat
     socket.on('chatData', () => {
@@ -653,51 +600,7 @@
 
 
     //render msg of DB
-    fetch('https://localhost:3000/wpp/last-message-client')
-        .then(res => res.json())
-        .then(data => {
-            for(clients of data){
 
-            const client = {
-                clientNumber: clients["from_wa_id"],
-                clientName: clients["name"],
-                timeMsg: clients["created_at"],
-                clientMsg: clients["body"],
-            }
-
-            renderInMessageVisualizer(client);
-        }
-        })
-        .catch(e => console.log(e));
-
-
-    function renderInMessageVisualizer(obj){
-
-        if(obj.timeMsg.indexOf('Z') != -1){
-            const date = new Date(obj.timeMsg.replace('Z',''));
-
-            const hour = String(date.getHours()).padStart(2,'0');
-            const minute = String(date.getMinutes()).padStart(2,'0');
-
-            obj.timeMsg = hour + ':' + minute;
-        }
-
-        $('#contact_area').prepend(
-            `<div class="msg")">
-                <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
-                    <a onclick="changeStatus(${obj.clientNumber})" class="d-flex">
-                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
-                        <div class="flex-fill ms-3 text-truncate">
-                            <h6 class="d-flex justify-content-between mb-0"><span><b>${obj.clientName}</b></span> <small class="msg-time"><b>${obj.timeMsg}</b></small></h6>
-                            <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i></span>
-                            ${obj.clientMsg}
-                        </div>
-                    </a>
-                </li>
-            </div>`
-        )
-
-    }
 
 
     const messages = document.getElementById('chatBody');
@@ -723,38 +626,7 @@
     //setInterval(getMessages, 5000);
 
 
-    function renderMessageInChat(obj){
-        const chatBody = document.getElementById('chatBody');
 
-
-        if(obj.timeMsg.indexOf('Z') != -1){
-             const date = new Date(obj.timeMsg.replace('Z',''));
-
-             const month = String(date.getMonth());
-             const hour = String(date.getHours()).padStart(2,'0');
-             const minute = String(date.getMinutes()).padStart(2,'0');
-
-             obj.timeMsg = month + ',' + hour + ':' + minute;
-        }
-
-        if(obj.isClient){
-            // getMessages()
-            chatBody.insertAdjacentHTML("beforeend",`
-                <li class="mb-3 d-flex flex-row align-items-end" id="messageOpen">
-                    <div class="max-width-70">
-                        <div class="user-info mb-1">
-                            <span class="text-muted small">
-                               ${obj.timeMsg},<br> ${obj.clientName}:
-                            </span>
-                        </div>
-                        <div class="card border-0 p-3">
-                            <div class="message"> ${obj.clientMsg}</div>
-                        </div>
-                    </div>
-                </li>`
-            )
-        }
-    }
 
     function sendmsg(){
          msg = document.getElementById('textarea').value;
@@ -769,7 +641,7 @@
                                             <div class="max-width-70">
                                                 <div class="user-info mb-1">
                                                     <span class="text-muted small">
-                                                    teste,<br>Robo zenvia:</span>
+                                                    <br>Robo zenvia:</span>
                                                 </div>
                                                 <div class="card border-0 p-3">
                                                     <div class="message"> ${msg}</div>
