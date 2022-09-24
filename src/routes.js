@@ -117,7 +117,7 @@ router.get('/painel-supervisor', (req,res) => {
 
     var sidebarHome = "active";
     var container = false;
-    res.render('./paineis/painel-agente/chat',
+    res.render('./paineis/painel-supervisor/chat',
     {
         title:'Agente Home - iConect',
         container:container,
@@ -168,7 +168,19 @@ router.post("/webhook", async (req,res) => {
 router.get("/wpp/last-message-client", async (req, res) => {
     //render messages of db in messages visualizer
     try{
-        const response = await lastMessage(db)
+        const response = await lastMessage(db, 'EM_ESPERA')
+        res.json(response);
+        res.status(200);
+
+    } catch (error){
+        res.status(400).json({erro: error.message});
+    }
+})
+
+router.get("/wpp/last-message-client-all", async (req, res) => {
+    //render messages of db in messages visualizer
+    try{
+        const response = await lastMessage(db, ['EM_ESPERA', 'EM_ATENDIMENTO'])
         res.json(response);
         res.status(200);
 
@@ -238,12 +250,12 @@ router.post('/wpp/send-message', async (req,res) => {
 })
 
 router.post('/wpp/updatestatus', async (req,res) => {
-    const {clientNumber} = req.body;
-    console.log(clientNumber);
+    const {from_wa_id} = req.body;
+    console.log(from_wa_id);
     try {
-        await updateStatusMessage(db, clientNumber)
+        await updateStatusMessage(db, String(from_wa_id))
         res.status(200).json({ok: 'ok'});
-        console.log('ok')
+        console.log('ok ???')
     } catch (error){
         res.status(400).json({erro: error.message});
     }

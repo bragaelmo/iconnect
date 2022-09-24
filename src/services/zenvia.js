@@ -26,27 +26,29 @@ exports.saveContact = async (db, from, name) => {
 }
 
 exports.saveMessage = async (db, from, message) => {
-    const sqlInsert = 'INSERT INTO messages (from_wa_id, type, body, to_wa) VALUES(?,?,?,?)'
+    const sqlInsert = 'INSERT INTO messages (from_wa_id, type, body, to_wa, status) VALUES(?,?,?,?, "EM_ESPERA")'
     db.query(sqlInsert,
     [from, message.contents[0].type, message.contents[0].text, message.to]);
 }
 
 exports.updateStatusMessage = async (db, number) => {
-  const sqlUpdate = 'UPDATE messages SET status = "EM_ATENDIMENTO" where from_wa_id = ?'
-  db.query(sqlUpdate, [number], (error, results, fields) => {
-    if (error){
-      return console.error(error.message);
-    }
-    console.log('Rows affected:', results.affectedRows);
-  });
-  
+  const sqlUpdate = 'UPDATE messages SET status = "EM_ATENDIMENTO" WHERE from_wa_id = ?'
+  const result = await new Promise((resolve, reject) => {
+    db.query(sqlUpdate, [number], (error, results, fields) => {
+      if (error){
+        return console.error(error.message);
+      }
+      return resolve(results)
+    })
+  })
+  return result
 }
 
-exports.lastMessage = async (db) => {
-  const sql = "SELECT contacts.name, contacts.status, messages.from_wa_id, messages.body, messages.type, messages.to_wa, messages.status, messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.status = 'EM_ESPERA' AND messages.created_at IN ( SELECT MAX(messages.created_at) FROM messages GROUP BY messages.from_wa_id)"
+exports.lastMessage = async (db, status) => {
+  const sql = "SELECT contacts.name, contacts.status, messages.from_wa_id, messages.body, messages.type, messages.to_wa, messages.status, messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.status IN (?) AND messages.created_at IN ( SELECT MAX(messages.created_at) FROM messages GROUP BY messages.from_wa_id)"
 
   const result = await new Promise((resolve, reject) => {
-    db.query(sql, function(err,results) {
+    db.query(sql, [status], function(err,results) {
         if(err) throw err;
         return resolve(results)
     })
@@ -109,7 +111,7 @@ exports.sendMessageToClient = async (db, clientNumber, message ) => {
     ]
   }
 
-  axios.post(uri, body, config)
+  await axios.post(uri, body, config)
 
   const sql = 'INSERT INTO messages (from_wa_id, to_wa, type, body) VALUES(?,?,?,?)'
     db.query(sql, [fromNumber, clientNumber, 'text', message]);
