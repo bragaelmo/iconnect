@@ -44,15 +44,7 @@
                                 </div>
                                 <div class="tab-pane fade" id="em-atendimento" role="tabpanel">
                                     <ul class="list-unstyled list-group list-group-custom list-group-flush mb-0">
-                                        <li class="list-group-item px-md-4 py-3 py-md-4">
-                                            <a href="javascript:void(0);" class="d-flex">
-                                                <img class="avatar rounded-circle" src="images/xs/avatar6.jpg" alt="">
-                                                <div class="flex-fill ms-3 text-truncate">
-                                                    <h6 class="d-flex justify-content-between mb-0"><span>Vanessa Knox</span> <small class="msg-time">10:45 AM</small></h6>
-                                                    <span class="text-muted">Estou com um problema na minha fatura, voces podem me ajudar?</span>
-                                                </div>
-                                            </a>
-                                        </li>
+                                        <!-- Carrega cv novas-->
                                     </ul>
                                 </div>
                             </div>
@@ -668,13 +660,19 @@
 
     }
 
-    function changeStatus(clientNumber){
-        alert( 'IOAOAOAOAOAOAO o TELSFONE ' + clientNumber)
+    function changeStatus(clientNumber){    
+        //alert( 'IOAOAOAOAOAOAO o TELSFONE ' + clientNumber)
         // FAZER UPDATE NA TABELA MESSAGE ALTERANDO O STATUS PARA EM_ATENDIMENTO
-        // MENSAGEM NOVA = EM ESPERA
-        // ABRIU A MENSAGEM = EM ATENDIMENTO
-       // e.preventDefault()
-
+          fetch('https://localhost:3000/wpp/updatestatus',{
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({clientNumber: '123456'}),
+              }).then(res => res.json())
+              .catch((res) => console.log(res));
+          //e.preventDefault()
     }
 
 

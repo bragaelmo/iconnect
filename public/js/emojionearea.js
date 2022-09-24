@@ -1482,7 +1482,7 @@ document = window.document || {};
         //}, self.id === 1); // calcElapsedTime()
     };
     var cdn = {
-        defaultBase: "https://cdnjs.cloudflare.com/ajax/libs/emojione/",
+        defaultBase: "https://cdn.jsdelivr.net/npm/emojione@4.5.0/lib/js/emojione.min.js",
         defaultBase3: "https://cdn.jsdelivr.net/",
         base: null,
         isLoading: false

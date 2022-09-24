@@ -36,11 +36,12 @@
   <script src="/js/libscripts.bundle.js"></script>
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-        <script src="/js/emojionearea.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/emojionearea@3.4.2/dist/emojionearea.min.js"></script>
         <script>
-            $('#textarea').emojioneArea({
-                pickerPosition: "top"
-            });
+          //Checar se a zenvia envia emoji
+           // $('#textarea').emojioneArea({
+           //     pickerPosition: "top"
+           // });//
 
             
 
@@ -201,15 +202,15 @@
            })
           }
           
-          if({{message}}){
+         /* if({{message}}){
             msgErroLogin();
             
-          }          
+          }     */     
         </script>
         <!-- Jquery Core Js -->
         <script src="/bundles/libscripts.bundle.js"></script>
         <!-- Plugin Js-->
-        <script src="/bundles/apexcharts.bundle.js"></script>
+        <!-- <script src="/bundles/apexcharts.bundle.js"></script>
         <!-- Jquery Page Js -->
         <!-- tawk chat -->
         <script src="/js/template.js"></script>

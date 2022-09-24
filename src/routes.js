@@ -4,7 +4,7 @@ const db = dbConnect();
 const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
-const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers } = require('./services/zenvia');
+const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers, updateStatusMessage } = require('./services/zenvia');
 const { route } = require("../zenvia-routes");
 
 
@@ -231,6 +231,18 @@ router.post('/wpp/send-message', async (req,res) => {
     try {
         await sendMessageToClient(db, clientNumber, message)
         res.status(200).json({ok: 'ok'});
+    } catch (error){
+        res.status(400).json({erro: error.message});
+    }
+})
+
+router.post('/wpp/updatestatus', async (req,res) => {
+    const {clientNumber} = req.body;
+    console.log(clientNumber);
+    try {
+        await updateStatusMessage(db, clientNumber)
+        res.status(200).json({ok: 'ok'});
+        console.log('ok')
     } catch (error){
         res.status(400).json({erro: error.message});
     }
