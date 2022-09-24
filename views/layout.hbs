@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{title}}</title>
     <!-- Favicon-->
-    <link rel="icon" href="/images/icone.png"> 
+    <link rel="icon" href="/images/icone.png">
     <!-- project css file  -->
     <link rel="stylesheet" href="/css/estilo.css">
     <link rel="stylesheet" href="/css/emojionearea.css">
@@ -14,7 +14,7 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   </head>
-  
+
   {{#if_cond login '!=' ''}}
   <body onload="getMessages()">
   {{else}}
@@ -26,7 +26,7 @@
     {{else}}
     <div class="container">
     {{/if_cond}}
-      
+
 
       {{{body}}}
 
@@ -42,7 +42,7 @@
                 pickerPosition: "top"
             });
 
-            
+
 
             var query = location.search.slice(1);
             var partes = query.split('&');
@@ -54,17 +54,15 @@
                 data[chave] = valor;
             });
 
-            
             //headerClient chatBody chatFooter
             if (typeof data.wa_id !== 'undefined') {
                 document.getElementById("headerClient").style.display = "block";
                 document.getElementById("headerClientEmpty").style.display = "none";
                 document.getElementById("chatBody").style.display = "block";
                 document.getElementById("chatBodyEmpty").style.display = "none";
+                // document.getElementById("buttonMoverAtendimento").style.display = "block";
                 document.getElementById("chatFooter").style.display = "block";
                 document.getElementById("chatFooterEmpty").style.display = "none";
-
-                
 
                 //RENDER MESSAGES IN CHAT
                 const clientNumber = data.wa_id
@@ -73,12 +71,10 @@
                   headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                  },  
+                  },
                   body: JSON.stringify(data),
                 }).then(res => res.json())
                   .then(data => {
-                    
-                    
                     //render msg chat
                     renderMessagesInChat(data, clientNumber);
                   })
@@ -86,17 +82,17 @@
                   console.log(err)
                 })
 
-                
             }else{
               console.log('x2');
                 document.getElementById("headerClient").style.display = "none";
                 document.getElementById("headerClientEmpty").style.display = "block";
-                document.getElementById("chatBody").style.display = "none";   
+                document.getElementById("chatBody").style.display = "none";
                 document.getElementById("chatBodyEmpty").style.display = "block";
+                document.getElementById("buttonMoverAtendimento").style.display = "none";
                 document.getElementById("chatFooter").style.display = "none";
                 document.getElementById("chatFooterEmpty").style.display = "block";
-              
-  
+
+
             }
 
 
@@ -108,35 +104,34 @@
                   headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                  },  
+                  },
                   body: JSON.stringify({clientNumber: clientNumber}),
               }).then((res) => res.json())
                 .then((data) => {
 
                   const name = data[0].name
 
-                 
+                //render info in chat
+                document.getElementById("chat-client-name").innerText = name;
+                document.getElementById("chat-client-photo").src = `https://ui-avatars.com/api/?name=${name}&background=random&color=ff0000&bold=true`;
 
-                  //render info in chat
+                const chatBody = document.getElementById('chatBody');
+                chatBody.innerHTML = '' // delete message in
 
-                 document.getElementById("chat-client-name").innerText = name;
-                 document.getElementById("chat-client-photo").src = `https://ui-avatars.com/api/?name=${name}&background=random&color=ff0000&bold=true`;
-
-                 const chatBody = document.getElementById('chatBody');
-
-                
-                 for(item of arr){
+                for(item of arr){
                   var timeMsg = item.created_at;
 
                   if(timeMsg.indexOf('Z') != -1){
-                              const date = new Date(timeMsg.replace('Z',''));
-                              
-                              const hour = String(date.getHours()).padStart(2,'0');
-                              const minute = String(date.getMinutes()).padStart(2,'0');
-                              
-                              timeMsg = hour + ':' + minute;
-                          }
-                                
+                      const date = new Date(timeMsg.replace('Z',''));
+
+                      const hour = String(date.getHours()).padStart(2,'0');
+                      const minute = String(date.getMinutes()).padStart(2,'0');
+
+                      timeMsg = hour + ':' + minute;
+                  }
+
+                  const teste = document.getElementById('testandoo')
+
                   if(arr["to_wa"] == undefined){
                     chatBody.insertAdjacentHTML("beforeend",`
                     <li class="mb-3 d-flex flex-row align-items-end">
@@ -181,9 +176,63 @@
                   */
               }).catch((res) => console.log(res));
 
-                            
+
             }
-        
+
+    function modalMoverAtendimento(clientNumber){
+        let messageOpen = document.getElementById("chatBody").style.display
+        if (messageOpen === 'block'){
+            $('#modalCloseMessage').modal('show')
+            const clientName = document.getElementById("chat-client-name").innerText
+            $('#spanInBodyModalCloseMessage').text("Mover o atendimento de "+clientName+" ("+clientNumber+") para a fila de " )
+        }
+    }
+
+    function changeStatus(clientNumber){
+            //render msg of DB
+            if (typeof clientNumber !== 'undefined') {
+                document.getElementById("headerClient").style.display = "block";
+                document.getElementById("headerClientEmpty").style.display = "none";
+                document.getElementById("chatBody").style.display = "block";
+                document.getElementById("chatBodyEmpty").style.display = "none";
+                document.getElementById("chatFooter").style.display = "block";
+                document.getElementById("chatFooterEmpty").style.display = "none";
+
+                document.getElementById("buttonMoverAtendimento").style.display = "block";
+                document.getElementById("buttonMoverAtendimento").setAttribute('onclick', `modalMoverAtendimento(${clientNumber})`)
+
+                //RENDER MESSAGES IN CHAT
+                fetch('https://localhost:3000/wpp/message-chat-client', {
+                  method: 'POST',
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({wa_id: clientNumber}),
+                }).then(res => res.json())
+                  .then(data => {
+                    //render msg chat
+                    renderMessagesInChat(data, clientNumber);
+                  })
+                  .catch(err => {
+                  console.log(err)
+                })
+
+
+
+            }else{
+                console.log('x2');
+                document.getElementById("headerClient").style.display = "none";
+                document.getElementById("headerClientEmpty").style.display = "block";
+                document.getElementById("chatBody").style.display = "none";
+                document.getElementById("chatBodyEmpty").style.display = "block";
+                document.getElementById("buttonMoverAtendimento").style.display = "none";
+                document.getElementById("chatFooter").style.display = "none";
+                document.getElementById("chatFooterEmpty").style.display = "block";
+            }
+
+        }
+
         </script>
         <script>
           function msgErroLogin(){
@@ -200,11 +249,11 @@
               icon:'success'
            })
           }
-          
+
           if({{message}}){
             msgErroLogin();
-            
-          }          
+
+          }
         </script>
         <!-- Jquery Core Js -->
         <script src="/bundles/libscripts.bundle.js"></script>
