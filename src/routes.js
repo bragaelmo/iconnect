@@ -117,7 +117,7 @@ router.get('/painel-supervisor', (req,res) => {
 
     var sidebarHome = "active";
     var container = false;
-    res.render('./paineis/painel-supervisor/chat',
+    res.render('./paineis/painel-agente/chat',
     {
         title:'Agente Home - iConect',
         container:container,
