@@ -428,8 +428,8 @@
                             <!-- Chat: Footer -->
                             <div id="chatFooterEmpty"></div>
                             <div id="chatFooter" class="chat-message">
-                                <form id="sendMessageToClient" action="/wpp/send-message" method="POST">
-
+                                 <!-- <form id="sendMessageToClient" action="">-->
+                                  <!--  <form onsubmit="sendmsg(); return false;" > -->
                                     <div class="publisher bt-1 border-light">
                                         <i class="avatar avatar-xs icofont-brand-whatsapp" style="font-size: 30px; color: silver;"></i>
                                         <input id="textarea" class="form-control mb-1" placeholder="Escreva sua mensagem aqui...">
@@ -437,11 +437,11 @@
                                         <i class="fa fa-paperclip file-browser"></i>
                                         <input type="file">
                                         </span>
-                                        <button id="send-msg"class="btn btn-light btn-sm">
+                                        <button id="send-msg" onclick="sendmsg()" class="btn btn-light btn-sm">
                                             <i class="icofont-paper-plane" style="font-size: 25px;"></i>
                                         </button>
                                     </div>
-                                </form>
+                               <!-- </form>-->
                             </div>
                         </div>
                     </div>
@@ -590,18 +590,12 @@
 
 <script>
     //var server = "https://pag.rexinternet.com.br:3000";
-
-
     //render message chat
     socket.on('chatData', () => {
         console.log('CHEGOU');
     })
 
     socket.emit('ready');
-
-
-    //render msg of DB
-
 
 
     const messages = document.getElementById('chatBody');
@@ -617,26 +611,29 @@
     }
 
     function scrollToBottom() {
-        console.log( 'SCROOOOLLLL ' + document.getElementById('chatBody').scrollHeight)
+         const messages = document.getElementById('chatBody');
         //window.scrollTo(0, document.getElementById('chatBody').scrollHeight);
-        messages.scrollToBottom = messages.scrollHeight;
+        messages.scrollTop = messages.scrollHeight;
     }
 
-    //scrollToBottom();
+    scrollToBottom();
 
-    //setInterval(getMessages, 5000);
+        //enviar msg ao apertar entter
+    $(document).on('keydown', function(event) {
+    if(event.keyCode === 13) {
+        sendmsg();
+    }
 
+    });
 
-
-
-    function sendmsg(){
-         msg = document.getElementById('textarea').value;
-        //INSERIR MSG NO BANCO
-        console.log (msg)
-        console.log('Deu certo')
-        //obtem o corpo do chat
-      const chatBody = document.getElementById('chatBody');
-            if(msg){
+    
+    //Função pra enviar mensagem
+   function sendmsg(){
+        msg = document.getElementById('textarea').value;
+        const chatBody = document.getElementById('chatBody');
+        const chatPhone = document.getElementById("chat-client-phone").innerText;
+        sendMessageToClient(chatPhone,msg);
+            if(msg){                
                     chatBody.insertAdjacentHTML("beforeend",`
                             <li class="mb-3 d-flex flex-row justify-content-end">
                                             <div class="max-width-70">
@@ -650,26 +647,23 @@
                                             </div>
                                         </li>`)
                 }
-            scrollToBottom();
-            sendToClient(clientNumber, msg)
-
+        chatBody.scrollTop = chatBody.scrollHeight;
     }
 
+    //Função da rota pra enviar para o cliente
+    function sendMessageToClient(clientNumber,message){
 
-    ///ENVIAR MENSAGEM
-   const form = document.getElementById('sendMessageToClient')
-    form.addEventListener('submit', e => {
-        e.preventDefault()
-            sendmsg();
-        })
-
-         //enviar msg ao apertar entter
-   /* $(document).on('keydown', function(event) {
-    if(event.keyCode === 13) {
-        sendmsg();
+      fetch('https://localhost:3000/wpp/send-message', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({clientNumber: clientNumber, message: message}),
+      })
     }
 
-    });       */
+       
 
 
     function search_conversation() {

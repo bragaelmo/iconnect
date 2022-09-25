@@ -240,12 +240,13 @@ router.post('/wpp/client-data', async (req,res) => {
 
 router.post('/wpp/send-message', async (req,res) => {
     const {clientNumber,  message} = req.body;
-
     try {
         await sendMessageToClient(db, clientNumber, message)
-        res.status(200).json({ok: 'ok'});
+         res.status(200).json({ok: 'ok'});
+         console.log('enviado');
     } catch (error){
         res.status(400).json({erro: error.message});
+        console.log('naoenviado');
     }
 })
 

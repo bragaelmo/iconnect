@@ -41,7 +41,7 @@
           //Checar se a zenvia envia emoji
            // $('#textarea').emojioneArea({
            //     pickerPosition: "top"
-           // });//
+           // });//    
     var server = "https://localhost:3000";
     var socket = io.connect(server);
 
@@ -355,9 +355,11 @@
             .catch(err => {
             console.log(err)
           })
+
       }else{
         disableComponents()
       }
+
     }
 
         </script>

@@ -94,14 +94,14 @@ exports.clientData = async (db, clientNumber ) => {
 
 exports.sendMessageToClient = async (db, clientNumber, message ) => {
   const fromNumber = '557481305345'
-  const uri = 'https://api.zenvia.com/v2/channels/whatsapp/messages'
-  const config = {
+  const endpoint = 'https://api.zenvia.com/v2/channels/whatsapp/messages'
+  const headers = {
     headers:{
       'X-API-TOKEN': 'p26Q_f6tj6utbkwtHmhzF-4mtvO0QK75ZJDV'
     }
   }
   const body = {
-    from: fromNumber,
+    from: fromNumber, 
     to: clientNumber,
     contents: [
       {
@@ -111,7 +111,7 @@ exports.sendMessageToClient = async (db, clientNumber, message ) => {
     ]
   }
 
-  await axios.post(uri, body, config)
+  await axios.post(endpoint, body, headers)
 
   const sql = 'INSERT INTO messages (from_wa_id, to_wa, type, body) VALUES(?,?,?,?)'
     db.query(sql, [fromNumber, clientNumber, 'text', message]);
