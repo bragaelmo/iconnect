@@ -20,7 +20,7 @@
                                     <input id="searchbar" name="search" type="text" onkeyup="search_conversation()" class="form-control mb-1" placeholder="Pesquisar...">
                                 </div>
                                 <div class="nav nav-pills justify-content-between text-center" role="tablist">
-                                    <a class="flex-fill rounded border-0 nav-link active" data-bs-toggle="tab" href="#em-espera" role="tab" aria-selected="false"><i class="icofont-ui-clock fs-5"></i> Em Espera</a>
+                                    <a class="flex-fill rounded border-0 nav-link active" id="em-espera-style" data-bs-toggle="tab" href="#em-espera" role="tab" aria-selected="false"><i class="icofont-ui-clock fs-5"></i> Em Espera</a>
                                     <a class="flex-fill rounded border-0 nav-link" id="em-atendimento-style" data-bs-toggle="tab" href="#em-atendimento" role="tab" aria-selected="true"><i class="icofont-ui-chat fs-5"></i> Em Atendimento</a>
                                 </div>
                             </div>
@@ -71,6 +71,7 @@
                                                                         <a style="border: none; font-size: 18px; cursor: pointer;"class="dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                                         <span id="chat-client-name">Carregando...</span>
                                                                         <span id="chat-client-phone" style="display:none;"></span>
+                                                                        <span id="chat-client-type" style="display:none;"></span>
                                                                         </a>
                                                                         <ul class="dropdown-menu border-0 shadow py-3 px-2">
                                                                             <li>
