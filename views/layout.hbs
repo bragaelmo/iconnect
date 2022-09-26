@@ -41,51 +41,16 @@
           //Checar se a zenvia envia emoji
            // $('#textarea').emojioneArea({
            //     pickerPosition: "top"
-           // });//    
+           // });//
     var server = "https://localhost:3000";
     var socket = io.connect(server);
 
     //render all messages that received
     socket.on("receivedMessage", (data) => {
-        const date = new Date()
-        const clientName = data.message.visitor.name;
-        const timeMsg = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2,'0')}`
-        const clientNumber = data.message.from;
-        const clientMsg = data.message.contents[0].text;
+      console.log(JSON.stringify(data))
+        changeStatus(data.from)
 
-        /**/
-        //startListClients()
-        renderInMessageVisualizer({clientNumber, clientName, timeMsg, clientMsg});
 
-        //exist same contact in display messager? if exist delete
-        var queryNumbers = document.querySelectorAll(`.n${clientNumber}`);
-
-        console.log(queryNumbers);
-        console.log('--------');
-
-        if(queryNumbers.length >= 1){
-            queryNumbers[1].remove();
-        }
-
-        //render mensagem in chat if chat is open
-        const chatPhone = document.getElementById("chat-client-phone").innerText
-        console.log('chatPhone ' + chatPhone)
-        if(clientNumber == chatPhone){
-            renderMessageInChat({clientName, timeMsg, clientMsg, isClient: true})
-        }
-
-        //Adicionar notificação
-        $('#notification').prepend(
-          `<li class="py-2 mb-1 border-bottom t${clientNumber}">
-            <a href="?wa_id=${clientNumber}" class="d-flex">
-            <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${clientName}&background=random&color=ff0000&bold=true">
-                <div class="flex-fill ms-2">
-                     <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">${clientName}</span>timeMsgnpm<small></small></p>
-                    <span class="">${clientMsg}</span>
-                </div>
-            </a>
-          </li>`
-        )
 
 
         //Parte para adiconar no sininho se tem notificação
@@ -98,32 +63,17 @@
     function renderMessageInChat(obj){
         const chatBody = document.getElementById('chatBody');
 
-        if(obj.timeMsg.indexOf('Z') != -1){
-             const date = new Date(obj.timeMsg.replace('Z',''));
+        const dateTime = obj.timeMsg.split('T')
+        const date = dateTime[0].split('-')
+        const dateFinish = `${date[2]}-${date[1]}-${date[0]}`
+        const time = dateTime[1].split('.')[0].split(':')
+        // Ordem exemplo: 26-09-2022 10:40
+        const timeFinish = ` ${dateFinish} ${time[0]}:${time[1]}`
+        obj.timeMsg = timeFinish
 
-             const month = String(date.getMonth());
-             const hour = String(date.getHours()).padStart(2,'0');
-             const minute = String(date.getMinutes()).padStart(2,'0');
-
-             obj.timeMsg = month + ',' + hour + ':' + minute;
-        }
 
         if(obj.isClient){
-            // getMessages()
-            chatBody.insertAdjacentHTML("beforeend",`
-                <li class="mb-3 d-flex flex-row align-items-end" id="messageOpen">
-                    <div class="max-width-70">
-                        <div class="user-info mb-1">
-                            <span class="text-muted small">
-                               ${obj.timeMsg},<br> ${obj.clientName}:
-                            </span>
-                        </div>
-                        <div class="card border-0 p-3">
-                            <div class="message"> ${obj.clientMsg}</div>
-                        </div>
-                    </div>
-                </li>`
-            )
+          chatClient(obj)
         }
       }
 
@@ -137,7 +87,37 @@
           data[chave] = valor;
       });
 
+    function chatClient(obj){
+       chatBody.insertAdjacentHTML("beforeend",`
+                <li class="mb-3 d-flex flex-row align-items-end" id="messageOpen">
+                    <div class="max-width-70">
+                        <div class="user-info mb-1">
+                            <span class="text-muted small">
+                              <br> ${obj.name}:
+                            </span>
+                        </div>
+                        <div class="card border-0 p-3">
+                            <div class="message"><p>${obj.body}</p> <p class="dateHourChat"> ${obj.timeMsg} </p></div>
+                        </div>
+                    </div>
+                </li>`
+            )
+    }
 
+    function chatAtendente(obj){
+       chatBody.insertAdjacentHTML("beforeend",`
+          <li class="mb-3 d-flex flex-row justify-content-end">
+              <div class="max-width-70">
+                  <div class="user-info mb-1">
+                      <span class="text-muted small">
+                      <br>Robo Zenvia:</span>
+                  </div>
+                  <div class="card border-0 p-3">
+                      <div class="message"><p>${obj.body}</p> <p class="dateHourChat"> ${obj.timeMsg} </p></div>
+                  </div>
+              </div>
+        </li>`)
+    }
             //headerClient chatBody chatFooter
 
     disableComponents()
@@ -172,14 +152,13 @@
     }
 
     function renderInMessageVisualizer(obj){
-        if(obj.timeMsg.indexOf('Z') != -1){
-            const date = new Date(obj.timeMsg.replace('Z',''));
-
-            const hour = String(date.getHours()).padStart(2,'0');
-            const minute = String(date.getMinutes()).padStart(2,'0');
-
-            obj.timeMsg = hour + ':' + minute;
-        }
+      console.log(JSON.stringify(obj))
+      const dateTime = obj.timeMsg.split('T')
+      const date = dateTime[0].split('-')
+      const dateFinish = `${date[2]}-${date[1]}-${date[0]}`
+      const time = dateTime[1].split('.')[0].split(':')
+      // Ordem exemplo: 26-09-2022 10:40
+      const timeFinish = ` ${dateFinish} ${time[0]}:${time[1]}`
 
         $('#contact_area').prepend(
             `<div class="msg")">
@@ -218,14 +197,13 @@
     }
 
     function renderInMessageVisualizerEmAtendimento(obj){
-      if(obj.timeMsg.indexOf('Z') != -1){
-          const date = new Date(obj.timeMsg.replace('Z',''));
-
-          const hour = String(date.getHours()).padStart(2,'0');
-          const minute = String(date.getMinutes()).padStart(2,'0');
-
-          obj.timeMsg = hour + ':' + minute;
-      }
+      const dateTime = obj.timeMsg.split('T')
+      const date = dateTime[0].split('-')
+      const dateFinish = `${date[2]}-${date[1]}-${date[0]}`
+      const time = dateTime[1].split('.')[0].split(':')
+      // Exemplo timefinish: 26-09-2022 10:40
+      const timeFinish = ` ${dateFinish} ${time[0]}:${time[1]}`
+      obj.timeMsg = timeFinish
 
       $('#contact_area_atendimento').prepend(
           `<div class="msg")">
@@ -244,6 +222,51 @@
     }
 
     function renderMessagesInChat(arr,clientNumber){
+      //render info in chat
+      document.getElementById("chat-client-phone").innerText = clientNumber;
+
+      const chatBody = document.getElementById('chatBody');
+      chatBody.innerHTML = '' // delete message in
+
+      var nameClient = ''
+      var statusClient = ''
+
+      for(item of arr){
+        var timeMsg = item.created_at;
+
+        const dateTime = timeMsg.split('T')
+        const date = dateTime[0].split('-')
+        const dateFinish = `${date[2]}-${date[1]}-${date[0]}`
+        const time = dateTime[1].split('.')[0].split(':')
+        // Ordem exemplo: 26-09-2022 10:40
+        const timeFinish = `${dateFinish} ${time[0]}:${time[1]}`
+
+        item.timeMsg = timeFinish
+        if(item.perfil == 'CLIENTE'){
+          nameClient = item.name
+          chatClient(item)
+          statusClient = item.status
+        }
+
+         if(item.perfil == 'ATENDENTE'){
+          chatAtendente(item)
+        }
+      }
+
+      if (statusClient == 'EM_ATENDIMENTO'){
+         document.getElementById("buttonMoverAtendimento").style.display = 'none'
+      } else {
+        document.getElementById("buttonMoverAtendimento").style.display = "block";
+        document.getElementById("buttonMoverAtendimento").setAttribute('onclick', `modalMoverAtendimento(${clientNumber})`)
+      }
+      document.getElementById("chat-client-name").innerText = nameClient;
+      document.getElementById("chat-client-photo").src = `https://ui-avatars.com/api/?name=${nameClient}&background=random&color=ff0000&bold=true`;
+
+      // Scroll to message more recent
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+     function renderMessagesInChatT(arr,clientNumber){
       //take name
       fetch('https://localhost:3000/wpp/client-data',{
         method: 'POST',
@@ -277,19 +300,19 @@
               timeMsg = hour + ':' + minute;
           }
 
-          if(arr["to_wa"] == undefined){
-            chatBody.insertAdjacentHTML("beforeend",`
-            <li class="mb-3 d-flex flex-row align-items-end">
-                            <div class="max-width-70">
-                                <div class="user-info mb-1">
-                                    <span class="text-muted small">
-                                    ${timeMsg},<br>${name}:</span>
-                                </div>
-                                <div class="card border-0 p-3">
-                                    <div class="message"> ${item["body"]}</div>
-                                </div>
-                            </div>
-                        </li>`)
+          if(arr.to_wa == undefined){
+             chatBody.insertAdjacentHTML("beforeend",`
+               <li class="mb-3 d-flex flex-row align-items-end">
+                          <div class="max-width-70">
+                              <div class="user-info mb-1">
+                                  <span class="text-muted small">
+                                  ${timeMsg},<br>${name}:</span>
+                              </div>
+                              <div class="card border-0 p-3">
+                                  <div class="message"> ${item["body"]}</div>
+                              </div>
+                          </div>
+                      </li>`)
           }
 
         }
@@ -297,6 +320,8 @@
 
 
     }
+
+
     function updateStatusAtendimento(clientNumber){
       fetch('https://localhost:3000/wpp/updatestatus', {
         method: 'POST',
@@ -335,9 +360,6 @@
             //render msg of DB
       if (typeof clientNumber !== 'undefined') {
           enableComponents()
-
-          document.getElementById("buttonMoverAtendimento").style.display = "block";
-          document.getElementById("buttonMoverAtendimento").setAttribute('onclick', `modalMoverAtendimento(${clientNumber})`)
 
           //RENDER MESSAGES IN CHAT
           fetch('https://localhost:3000/wpp/message-chat-client', {
