@@ -26,13 +26,13 @@ exports.saveContact = async (db, from, name) => {
 }
 
 exports.saveMessage = async (db, from, message) => {
-    const sqlInsert = 'INSERT INTO messages (from_wa_id, type, body, to_wa, status) VALUES(?,?,?,?, "EM_ESPERA")'
+    const sqlInsert = 'INSERT INTO messages (from_wa_id, type, body, to_wa) VALUES(?,?,?,?)'
     db.query(sqlInsert,
     [from, message.contents[0].type, message.contents[0].text, message.to]);
 }
 
 exports.updateStatusMessage = async (db, number) => {
-  const sqlUpdate = 'UPDATE messages SET status = "EM_ATENDIMENTO" WHERE from_wa_id = ?'
+  const sqlUpdate = 'UPDATE contacts SET status = "EM_ATENDIMENTO" WHERE wa_id = ?'
   const result = await new Promise((resolve, reject) => {
     db.query(sqlUpdate, [number], (error, results, fields) => {
       if (error){
@@ -45,7 +45,7 @@ exports.updateStatusMessage = async (db, number) => {
 }
 
 exports.lastMessage = async (db, status) => {
-  const sql = "SELECT contacts.name, contacts.status, messages.from_wa_id, messages.body, messages.type, messages.to_wa, messages.status, messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.status IN (?) AND messages.created_at IN ( SELECT MAX(messages.created_at) FROM messages GROUP BY messages.from_wa_id)"
+  const sql = "SELECT contacts.name, contacts.status, messages.from_wa_id, messages.body, messages.type, messages.to_wa, messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE contacts.status IN (?) AND messages.created_at IN ( SELECT MAX(messages.created_at) FROM messages GROUP BY messages.from_wa_id)"
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, [status], function(err,results) {
@@ -57,7 +57,7 @@ exports.lastMessage = async (db, status) => {
 }
 
 exports.messageClient = async (db, from) => {
-  const sql = "SELECT contacts.name, messages.from_wa_id, messages.body, messages.type, messages.to_wa, messages.status, messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.from_wa_id = ?"
+  const sql = "SELECT contacts.name, messages.from_wa_id, messages.body, messages.type, messages.to_wa, contacts.status, messages.created_at FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.from_wa_id = ?"
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, [from], function(err,results) {
@@ -69,7 +69,7 @@ exports.messageClient = async (db, from) => {
 }
 
 exports.messageOfClient = async (db, from ) => {
-  const sql = 'SELECT messages.created_at, messages.from_wa_id, messages.to_wa, messages.body, contacts.name FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.from_wa_id = ? OR (messages.from_wa_id = 557481305345 and messages.to_wa = ?)'
+  const sql = 'SELECT messages.created_at, messages.from_wa_id, messages.to_wa, messages.body, contacts.name, contacts.perfil, contacts.status FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.from_wa_id = ? OR (messages.from_wa_id = 557481305345 and messages.to_wa = ?)'
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, [from, from], (err,results) => {
@@ -101,8 +101,8 @@ exports.sendMessageToClient = async (db, clientNumber, message ) => {
     }
   }
   const body = {
-    from: fromNumber, 
-    to: clientNumber,
+    from: fromNumber,
+    to: '5521968094198',
     contents: [
       {
         type: 'text',

@@ -144,7 +144,9 @@ router.post("/webhook", async (req,res) => {
             await saveContact(db, from, hook.message.visitor.name)
             await saveMessage(db, from, hook.message)
 
-            socketIO.emit('receivedMessage', hook)
+            const response = await messageOfClient(db, from)
+
+            socketIO.emit('receivedMessage', {from})
 
             res.status(200).send({message: "enviado"});
         }

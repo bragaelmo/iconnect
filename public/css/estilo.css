@@ -18073,7 +18073,12 @@ button#buttonMoverAtendimento {
     background-color: #FFBA20;
     color: black;
 }
-
+.dateHourChat{
+    font-size: 10px;
+    text-align: right;
+    margin-bottom: -10px;
+    color: #c0c0c0;
+}
 .loader {
     position: fixed;
     left: 0px;
