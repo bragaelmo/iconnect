@@ -182,7 +182,7 @@ router.get("/wpp/last-message-client", async (req, res) => {
 router.get("/wpp/last-message-client-all", async (req, res) => {
     //render messages of db in messages visualizer
     try{
-        const response = await lastMessage(db, ['EM_ESPERA', 'EM_ATENDIMENTO'])
+        const response = await lastMessage(db, ['EM_ATENDIMENTO'])
         res.json(response);
         res.status(200);
 

@@ -47,11 +47,22 @@
 
     //render all messages that received
     socket.on("receivedMessage", (data) => {
-      console.log(JSON.stringify(data))
-        changeStatus(data.from)
+        const phoneChat = document.getElementById("chat-client-phone").innerText
+        const chatOpen = document.getElementById("chat-client-name").innerText
+        var renderChatAutomatic = false
+        if(phoneChat == data.from){
+          renderChatAutomatic = true
+        }
 
+        if(chatOpen != ''){
+          changeStatus(data.from, '', renderChatAutomatic)
+        }
 
-
+        if($('#em-espera-style').hasClass('active')){
+          startListClients()
+        } else if ($('#em-atendimento-style').hasClass('active')) {
+          startListClientsEmAtendimento()
+        }
 
         //Parte para adiconar no sininho se tem notificação
         var not = parseInt(document.getElementById('noti').innerText);
@@ -106,7 +117,7 @@
 
     function chatAtendente(obj){
        chatBody.insertAdjacentHTML("beforeend",`
-          <li class="mb-3 d-flex flex-row justify-content-end">
+          <li class="mb-3 d-flex flex-row justify-content-end" id="messageOpen">
               <div class="max-width-70">
                   <div class="user-info mb-1">
                       <span class="text-muted small">
@@ -129,10 +140,12 @@
       document.getElementById("buttonMoverAtendimento").style.display = "none";
       document.getElementById("chatFooter").style.display = "none";
       document.getElementById("chatFooterEmpty").style.display = "block";
+      document.getElementById("chat-client-name").innerText = ''
     }
 
     startListClients()
     function startListClients(){
+      $('.msg').fadeOut(600, function(){ $(this).remove();});
       fetch('https://localhost:3000/wpp/last-message-client')
         .then(res => res.json())
         .then(data => {
@@ -152,13 +165,13 @@
     }
 
     function renderInMessageVisualizer(obj){
-      console.log(JSON.stringify(obj))
       const dateTime = obj.timeMsg.split('T')
       const date = dateTime[0].split('-')
       const dateFinish = `${date[2]}-${date[1]}-${date[0]}`
       const time = dateTime[1].split('.')[0].split(':')
       // Ordem exemplo: 26-09-2022 10:40
       const timeFinish = ` ${dateFinish} ${time[0]}:${time[1]}`
+      obj.timeMsg = timeFinish
 
         $('#contact_area').prepend(
             `<div class="msg")">
@@ -176,12 +189,13 @@
         )
     }
 
-    startListClientsEmAtendimento()
+    //startListClientsEmAtendimento()
     function startListClientsEmAtendimento(){
+      $('.msg').fadeOut(600, function(){ $(this).remove();});
       fetch('https://localhost:3000/wpp/last-message-client-all')
       .then(res => res.json())
       .then(data => {
-          for(clients of data){
+        for(clients of data){
 
           const client = {
               clientNumber: clients["from_wa_id"],
@@ -189,11 +203,26 @@
               timeMsg: clients["created_at"],
               clientMsg: clients["body"],
           }
-
           renderInMessageVisualizerEmAtendimento(client);
-      }
+        }
       })
       .catch(e => console.log(e));
+    }
+
+    onclickCloseChatBody()
+    function onclickCloseChatBody(){
+      document.getElementById("em-atendimento-style").setAttribute('onclick', `closeChatBodyEspera()`)
+      document.getElementById("em-espera-style").setAttribute('onclick', `closeChatBodyAtendimento()`)
+    }
+    function closeChatBodyEspera(){
+      document.getElementById('chatBody').innerHTML = ''
+      disableComponents()
+      startListClientsEmAtendimento()
+    }
+    function closeChatBodyAtendimento(){
+      document.getElementById('chatBody').innerHTML = ''
+      disableComponents()
+      startListClients()
     }
 
     function renderInMessageVisualizerEmAtendimento(obj){
@@ -225,8 +254,7 @@
       //render info in chat
       document.getElementById("chat-client-phone").innerText = clientNumber;
 
-      const chatBody = document.getElementById('chatBody');
-      chatBody.innerHTML = '' // delete message in
+
 
       var nameClient = ''
       var statusClient = ''
@@ -248,7 +276,7 @@
           statusClient = item.status
         }
 
-         if(item.perfil == 'ATENDENTE'){
+        if(item.perfil == 'ATENDENTE'){
           chatAtendente(item)
         }
       }
@@ -261,7 +289,7 @@
       }
       document.getElementById("chat-client-name").innerText = nameClient;
       document.getElementById("chat-client-photo").src = `https://ui-avatars.com/api/?name=${nameClient}&background=random&color=ff0000&bold=true`;
-
+      document.getElementById("chat-client-type").innerText = statusClient
       // Scroll to message more recent
       chatBody.scrollTop = chatBody.scrollHeight;
     }
@@ -317,8 +345,6 @@
 
         }
       }).catch((res) => console.log(res));
-
-
     }
 
 
@@ -356,10 +382,11 @@
       document.getElementById("chatFooterEmpty").style.display = "none";
     }
 
-    function changeStatus(clientNumber){
+    function changeStatus(clientNumber, type, renderAutomatic = true){
             //render msg of DB
       if (typeof clientNumber !== 'undefined') {
-          enableComponents()
+          const phoneChatIsOpen = document.getElementById("chat-client-phone").innerText
+
 
           //RENDER MESSAGES IN CHAT
           fetch('https://localhost:3000/wpp/message-chat-client', {
@@ -372,13 +399,16 @@
           }).then(res => res.json())
             .then(data => {
               //render msg chat
-              renderMessagesInChat(data, clientNumber);
+                if(renderAutomatic){
+                  renderMessagesInChat(data, clientNumber);
+                  enableComponents()
+                }
             })
             .catch(err => {
             console.log(err)
           })
 
-      }else{
+      } else {
         disableComponents()
       }
 
