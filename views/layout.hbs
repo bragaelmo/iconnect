@@ -14,7 +14,7 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   </head>
-
+  <span id="my-mail" style="display:none">{{ sessionEmail }}</span>
   {{#if_cond login '!=' ''}}
   <body onload="getMessages()">
   {{else}}
@@ -47,29 +47,34 @@
 
     //render all messages that received
     socket.on("receivedMessage", (data) => {
-        const phoneChat = document.getElementById("chat-client-phone").innerText
-        const chatOpen = document.getElementById("chat-client-name").innerText
-        var renderChatAutomatic = false
-        if(phoneChat == data.from){
-          renderChatAutomatic = true
-        }
-
-        if(chatOpen != ''){
-          changeStatus(data.from, '', renderChatAutomatic)
-        }
-
-        if($('#em-espera-style').hasClass('active')){
-          startListClients()
-        } else if ($('#em-atendimento-style').hasClass('active')) {
-          startListClientsEmAtendimento()
-        }
-
-        //Parte para adiconar no sininho se tem notificação
-        var not = parseInt(document.getElementById('noti').innerText);
-        not = not + 1;
-        document.getElementById('noti').innerHTML = not;
-        document.getElementById('noti2').innerHTML = not;
+        initialSocket(data)
     })
+
+    function initialSocket(data){
+      const phoneChat = document.getElementById("chat-client-phone").innerText
+      const chatOpen = document.getElementById("chat-client-name").innerText
+      var renderChatAutomatic = false
+      console.log('VOLTEI SOCKET')
+      if(phoneChat == data.fromClient){
+        renderChatAutomatic = true
+      }
+
+      if(chatOpen != ''){
+        changeStatus(data.atendimentoId, '', renderChatAutomatic)
+      }
+
+      if($('#em-espera-style').hasClass('active')){
+        startListClients()
+      } else if ($('#em-atendimento-style').hasClass('active')) {
+        startListClientsEmAtendimento()
+      }
+
+      //Parte para adiconar no sininho se tem notificação
+      var not = parseInt(document.getElementById('noti').innerText);
+      not = not + 1;
+      document.getElementById('noti').innerHTML = not;
+      document.getElementById('noti2').innerHTML = not;
+    }
 
     function renderMessageInChat(obj){
         const chatBody = document.getElementById('chatBody');
@@ -137,31 +142,39 @@
       document.getElementById("headerClientEmpty").style.display = "block";
       document.getElementById("chatBody").style.display = "none";
       document.getElementById("chatBodyEmpty").style.display = "block";
-      document.getElementById("buttonMoverAtendimento").style.display = "none";
+      document.getElementById("buttonMoverAtendimentoDiv").style.display = "none";
       document.getElementById("chatFooter").style.display = "none";
       document.getElementById("chatFooterEmpty").style.display = "block";
       document.getElementById("chat-client-name").innerText = ''
+      document.getElementById("chat-client-photo").src = ''
+      document.getElementById("chat-client-type").innerText = ''
+      document.getElementById("chat-client-phone").innerText = ''
+      document.getElementById("chat-client-atendimento-id").innerText = ''
+      document.getElementById("chat-received-zenvia-number").innerText = ''
     }
 
     startListClients()
     function startListClients(){
       $('.msg').fadeOut(600, function(){ $(this).remove();});
       fetch('https://localhost:3000/wpp/last-message-client')
-        .then(res => res.json())
-        .then(data => {
-            for(clients of data){
+      .then(res => res.json())
+      .then(data => {
+        for(clients of data){
+          console.log(JSON.stringify(clients))
+          const client = {
+            clientNumber: clients.from_wa_id,
+            clientName: clients.name,
+            timeMsg: clients.messageCreatedAt,
+            clientMsg: clients.body,
+            atendimentoId: clients.atendimentoId,
+            atendimentoStatus: clients.atendimentoStatus,
+            atendimentoUserId: clients.atendimentoUserId,
+          }
 
-            const client = {
-                clientNumber: clients["from_wa_id"],
-                clientName: clients["name"],
-                timeMsg: clients["created_at"],
-                clientMsg: clients["body"],
-            }
-
-            renderInMessageVisualizer(client);
+          renderInMessageVisualizer(client);
         }
-        })
-        .catch(e => console.log(e));
+      })
+      .catch(e => console.log(e));
     }
 
     function renderInMessageVisualizer(obj){
@@ -175,16 +188,19 @@
 
         $('#contact_area').prepend(
             `<div class="msg")">
+                <a onclick="changeStatus(${obj.atendimentoId})">
+                <span id="infoMsg"></span>
                 <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
-                    <a onclick="changeStatus(${obj.clientNumber})" class="d-flex">
+                    <div class="d-flex">
                         <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
                         <div class="flex-fill ms-3 text-truncate">
                             <h6 class="d-flex justify-content-between mb-0"><span><b>${obj.clientName}</b></span> <small class="msg-time"><b>${obj.timeMsg}</b></small></h6>
                             <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i></span>
                             ${obj.clientMsg}
                         </div>
-                    </a>
+                    </div>
                 </li>
+                </a>
             </div>`
         )
     }
@@ -192,16 +208,26 @@
     //startListClientsEmAtendimento()
     function startListClientsEmAtendimento(){
       $('.msg').fadeOut(600, function(){ $(this).remove();});
-      fetch('https://localhost:3000/wpp/last-message-client-all')
+      const email = document.getElementById('my-mail').innerText
+      fetch('https://localhost:3000/wpp/last-message-client-in-service', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email: email}),
+      })
       .then(res => res.json())
       .then(data => {
         for(clients of data){
-
           const client = {
-              clientNumber: clients["from_wa_id"],
-              clientName: clients["name"],
-              timeMsg: clients["created_at"],
-              clientMsg: clients["body"],
+              clientNumber: clients.from_wa_id,
+              clientName: clients.name,
+              timeMsg: clients.messageCreatedAt,
+              clientMsg: clients.body,
+              atendimentoId: clients.atendimentoId,
+              atendimentoStatus: clients.atendimentoStatus,
+              atendimentoUserId: clients.atendimentoUserId
           }
           renderInMessageVisualizerEmAtendimento(client);
         }
@@ -236,28 +262,33 @@
 
       $('#contact_area_atendimento').prepend(
           `<div class="msg")">
+            <a onclick="changeStatus(${obj.atendimentoId})" >
               <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
-                  <a onclick="changeStatus(${obj.clientNumber})" class="d-flex">
+                  <div class="d-flex">
                       <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
                       <div class="flex-fill ms-3 text-truncate">
                           <h6 class="d-flex justify-content-between mb-0"><span>${obj.clientName}</span> <small class="msg-time">${obj.timeMsg}</small></h6>
                           <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i></span>
                           ${obj.clientMsg}
                       </div>
-                  </a>
+                  </div>
               </li>
+            </a>
           </div>`
       )
     }
 
-    function renderMessagesInChat(arr,clientNumber){
+    function renderMessagesInChat(arr){
       //render info in chat
-      document.getElementById("chat-client-phone").innerText = clientNumber;
-
-
 
       var nameClient = ''
+      var phoneClient = ''
       var statusClient = ''
+      var atendimentoId = ''
+      var roboNumber = ''
+
+      // Apaga as mensagens em aberto do chat
+      document.getElementById('chatBody').innerHTML = ''
 
       for(item of arr){
         var timeMsg = item.created_at;
@@ -268,12 +299,15 @@
         const time = dateTime[1].split('.')[0].split(':')
         // Ordem exemplo: 26-09-2022 10:40
         const timeFinish = `${dateFinish} ${time[0]}:${time[1]}`
-
         item.timeMsg = timeFinish
+
         if(item.perfil == 'CLIENTE'){
-          nameClient = item.name
           chatClient(item)
+          nameClient = item.name
           statusClient = item.status
+          phoneClient = item.from_wa_id
+          atendimentoId = item.atendimento_id
+          roboNumber= item.to_wa
         }
 
         if(item.perfil == 'ATENDENTE'){
@@ -281,96 +315,68 @@
         }
       }
 
-      if (statusClient == 'EM_ATENDIMENTO'){
-         document.getElementById("buttonMoverAtendimento").style.display = 'none'
-      } else {
-        document.getElementById("buttonMoverAtendimento").style.display = "block";
-        document.getElementById("buttonMoverAtendimento").setAttribute('onclick', `modalMoverAtendimento(${clientNumber})`)
-      }
+      document.getElementById("buttonMoverAtendimentoDiv").style.display = "block";
       document.getElementById("chat-client-name").innerText = nameClient;
       document.getElementById("chat-client-photo").src = `https://ui-avatars.com/api/?name=${nameClient}&background=random&color=ff0000&bold=true`;
       document.getElementById("chat-client-type").innerText = statusClient
+      document.getElementById("chat-client-phone").innerText = phoneClient;
+      document.getElementById("chat-client-atendimento-id").innerText = atendimentoId;
+      document.getElementById("chat-received-zenvia-number").innerText = roboNumber;
+
+      if (statusClient == 'EM_ATENDIMENTO'){
+        document.getElementById("buttonMoverAtendimento").style.display = "block";
+        document.getElementById("buttonMoverAtendimento").setAttribute('onclick', `modalMoverAtendimento(${phoneClient})`)
+        document.getElementById("buttonAtender").style.display = 'none'
+        document.getElementById("chatFooterEmpty").style.display = 'none'
+        document.getElementById("chatFooter").style.display = 'block'
+      } else {
+        document.getElementById("chatFooter").style.display = "none";
+        document.getElementById("buttonAtender").style.display = "block";
+        document.getElementById("buttonAtender").setAttribute('onclick', `butAtender(${atendimentoId})`)
+        document.getElementById("chatFooterEmpty").style.display = "block";
+        document.getElementById("buttonMoverAtendimento").style.display = 'none'
+      }
+
       // Scroll to message more recent
       chatBody.scrollTop = chatBody.scrollHeight;
     }
 
-     function renderMessagesInChatT(arr,clientNumber){
-      //take name
-      fetch('https://localhost:3000/wpp/client-data',{
-        method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({clientNumber: clientNumber}),
-      }).then((res) => res.json())
-        .then((data) => {
-
-        const name = data[0].name
-
-        //render info in chat
-        document.getElementById("chat-client-name").innerText = name;
-        document.getElementById("chat-client-phone").innerText = clientNumber;
-        document.getElementById("chat-client-photo").src = `https://ui-avatars.com/api/?name=${name}&background=random&color=ff0000&bold=true`;
-
-        const chatBody = document.getElementById('chatBody');
-        chatBody.innerHTML = '' // delete message in
-
-        for(item of arr){
-          var timeMsg = item.created_at;
-
-          if(timeMsg.indexOf('Z') != -1){
-              const date = new Date(timeMsg.replace('Z',''));
-
-              const hour = String(date.getHours()).padStart(2,'0');
-              const minute = String(date.getMinutes()).padStart(2,'0');
-
-              timeMsg = hour + ':' + minute;
-          }
-
-          if(arr.to_wa == undefined){
-             chatBody.insertAdjacentHTML("beforeend",`
-               <li class="mb-3 d-flex flex-row align-items-end">
-                          <div class="max-width-70">
-                              <div class="user-info mb-1">
-                                  <span class="text-muted small">
-                                  ${timeMsg},<br>${name}:</span>
-                              </div>
-                              <div class="card border-0 p-3">
-                                  <div class="message"> ${item["body"]}</div>
-                              </div>
-                          </div>
-                      </li>`)
-          }
-
-        }
-      }).catch((res) => console.log(res));
-    }
-
-
-    function updateStatusAtendimento(clientNumber){
+    function updateStatusAtendimento(atendimentoId, userEmail){
       fetch('https://localhost:3000/wpp/updatestatus', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({from_wa_id: clientNumber}),
+        body: JSON.stringify({atendimentoId, userEmail}),
       })
-      $('#modalCloseMessage').modal('toggle')
 
-      disableComponents()
-      location.reload()
+      //disableComponents()
+      //location.reload()
     }
 
     function modalMoverAtendimento(clientNumber){
         let messageOpen = document.getElementById("chatBody").style.display
         if (messageOpen === 'block'){
-            $('#modalCloseMessage').modal('show')
+            // $('#modalCloseMessage').modal('show')
             const clientName = document.getElementById("chat-client-name").innerText
             $('#spanInBodyModalCloseMessage').text("Mover o atendimento de "+clientName+" ("+clientNumber+") para a fila de " )
             document.getElementById("buttonMover").setAttribute('onclick', `updateStatusAtendimento(${clientNumber})`)
         }
+    }
+
+    function butAtender(atendimentoId){
+      var userEmail = document.getElementById('my-mail').innerText
+      var phoneChat = document.getElementById("chat-client-phone").innerText
+
+
+      updateStatusAtendimento(atendimentoId, userEmail)
+
+      $('#em-atendimento-style').addClass('active')
+      $('#em-espera-style').removeClass('active')
+      $('#em-atendimento').addClass('active')
+      $('#em-atendimento').addClass('show')
+      initialSocket({fromClient: phoneChat, atendimentoId})
     }
 
     function enableComponents(){
@@ -378,15 +384,11 @@
       document.getElementById("headerClientEmpty").style.display = "none";
       document.getElementById("chatBody").style.display = "block";
       document.getElementById("chatBodyEmpty").style.display = "none";
-      document.getElementById("chatFooter").style.display = "block";
-      document.getElementById("chatFooterEmpty").style.display = "none";
     }
 
-    function changeStatus(clientNumber, type, renderAutomatic = true){
+    function changeStatus(atendimentoId, type, renderAutomatic = true){
             //render msg of DB
-      if (typeof clientNumber !== 'undefined') {
-          const phoneChatIsOpen = document.getElementById("chat-client-phone").innerText
-
+      if (typeof atendimentoId !== 'undefined') {
 
           //RENDER MESSAGES IN CHAT
           fetch('https://localhost:3000/wpp/message-chat-client', {
@@ -395,12 +397,12 @@
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({wa_id: clientNumber}),
+            body: JSON.stringify({atendimento_id: atendimentoId}),
           }).then(res => res.json())
             .then(data => {
               //render msg chat
                 if(renderAutomatic){
-                  renderMessagesInChat(data, clientNumber);
+                  renderMessagesInChat(data);
                   enableComponents()
                 }
             })
