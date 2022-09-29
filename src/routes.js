@@ -4,8 +4,9 @@ const db = dbConnect();
 const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
-const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers, updateStatusMessage } = require('./services/zenvia');
+const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers, updateStatusMessage, getMessage, updateAtendimento } = require('./services/zenvia');
 const { route } = require("../zenvia-routes");
+const { atendimento } = require("./services/atendimento");
 
 
 socketIO.on('db', (socket) => {
@@ -140,14 +141,10 @@ router.post("/webhook", async (req,res) => {
     try {
         //if it's client message
         if(hook.message){
-            const from = hook.message.from
-            await saveContact(db, from, hook.message.visitor.name)
-            await saveMessage(db, from, hook.message)
+            const fromClient = hook.message.from
+            const atendimentoId = await atendimento(db, hook)
 
-            const response = await messageOfClient(db, from)
-
-            socketIO.emit('receivedMessage', {from})
-
+            socketIO.emit('receivedMessage', {fromClient, atendimentoId})
             res.status(200).send({message: "enviado"});
         }
 
@@ -179,10 +176,13 @@ router.get("/wpp/last-message-client", async (req, res) => {
     }
 })
 
-router.get("/wpp/last-message-client-all", async (req, res) => {
-    //render messages of db in messages visualizer
+router.post("/wpp/last-message-client-in-service", async (req, res) => {
+
+    // Gerar token de email para dificultar o acesso a atendimentos nao permitidos
+    const {email} = req.body
+
     try{
-        const response = await lastMessage(db, ['EM_ATENDIMENTO'])
+        const response = await lastMessage(db, 'EM_ATENDIMENTO', email)
         res.json(response);
         res.status(200);
 
@@ -217,9 +217,10 @@ router.post('/cadastro-usuario', async (req,res) =>{
 });
 
 router.post("/wpp/message-chat-client", async (req,res) => {
-    const {wa_id} = req.body;
+    const {atendimento_id} = req.body;
+
     try{
-        const response = await messageOfClient(db, wa_id)
+        const response = await messageOfClient(db, atendimento_id)
         res.json(response);
         res.status(200);
 
@@ -241,11 +242,13 @@ router.post('/wpp/client-data', async (req,res) => {
 })
 
 router.post('/wpp/send-message', async (req,res) => {
-    const {clientNumber,  message} = req.body;
+    // Adicionar token de atendimento para permitir o envio somente se o atendente assumir o atendimento
+    const {clientNumber, message, chatAtendimentoId, roboNumber} = req.body;
+    console.log(`Enviando mensagem [${message}] para o cliente [${clientNumber}] do robo [${roboNumber}] e atendimento [${chatAtendimentoId}]`)
     try {
-        await sendMessageToClient(db, clientNumber, message)
-         res.status(200).json({ok: 'ok'});
-         console.log('enviado');
+        await sendMessageToClient(db, clientNumber, message, chatAtendimentoId, roboNumber)
+        res.status(200).json({ok: 'ok'});
+        console.log(`Mensagem [${message}] enviada com sucesso para o cliente [${clientNumber}] do robo [${roboNumber}] e atendimento [${chatAtendimentoId}]`)
     } catch (error){
         res.status(400).json({erro: error.message});
         console.log('naoenviado');
@@ -253,10 +256,13 @@ router.post('/wpp/send-message', async (req,res) => {
 })
 
 router.post('/wpp/updatestatus', async (req,res) => {
-    const {from_wa_id} = req.body;
-    console.log(from_wa_id);
+    const {atendimentoId, userEmail} = req.body;
+
     try {
-        await updateStatusMessage(db, String(from_wa_id))
+        //await updateStatusMessage(db, String(from_wa_id))
+
+        await updateAtendimento(db, userEmail, atendimentoId)
+
         res.status(200).json({ok: 'ok'});
         console.log('ok ???')
     } catch (error){
