@@ -310,6 +310,7 @@
         }
 
         if(item.perfil == 'ATENDENTE'){
+          console.log('TESTANDO ATENDENTE ' + JSON.stringify(item))
           chatAtendente(item)
         }
       }
@@ -400,6 +401,7 @@
             .then(data => {
               //render msg chat
                 if(renderAutomatic){
+                  console.log('render if ' + renderAutomatic)
                   renderMessagesInChat(data);
                   enableComponents()
                 }
