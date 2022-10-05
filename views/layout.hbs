@@ -16,7 +16,7 @@
   </head>
   <span id="my-mail" style="display:none">{{ sessionEmail }}</span>
   {{#if_cond login '!=' ''}}
-  <body onload="getMessages()">
+  <body>
   {{else}}
   <body style="background-color: #075E54;">
   {{/if_cond}}
@@ -33,7 +33,7 @@
 
     </div>
   <!-- Jquery Core Js -->
-  <script src="/js/libscripts.bundle.js"></script>
+  {{!-- <script src="/js/libscripts.bundle.js"></script> --}}
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/emojionearea@3.4.2/dist/emojionearea.min.js"></script>
@@ -54,7 +54,7 @@
       const phoneChat = document.getElementById("chat-client-phone").innerText
       const chatOpen = document.getElementById("chat-client-name").innerText
       var renderChatAutomatic = false
-      console.log('VOLTEI SOCKET')
+
       if(phoneChat == data.fromClient){
         renderChatAutomatic = true
       }
@@ -160,7 +160,6 @@
       .then(res => res.json())
       .then(data => {
         for(clients of data){
-          console.log(JSON.stringify(clients))
           const client = {
             clientNumber: clients.from_wa_id,
             clientName: clients.name,
@@ -325,7 +324,7 @@
 
       if (statusClient == 'EM_ATENDIMENTO'){
         document.getElementById("buttonMoverAtendimento").style.display = "block";
-        document.getElementById("buttonMoverAtendimento").setAttribute('onclick', `modalMoverAtendimento(${phoneClient})`)
+        document.getElementById("buttonMoverAtendimento").setAttribute('onclick', `listAtendentes()`)
         document.getElementById("buttonAtender").style.display = 'none'
         document.getElementById("chatFooterEmpty").style.display = 'none'
         document.getElementById("chatFooter").style.display = 'block'
@@ -355,15 +354,15 @@
       //location.reload()
     }
 
-    function modalMoverAtendimento(clientNumber){
-        let messageOpen = document.getElementById("chatBody").style.display
-        if (messageOpen === 'block'){
+//    function modalMoverAtendimento(clientNumber){
+  //      let messageOpen = document.getElementById("chatBody").style.display
+    //    if (messageOpen === 'block'){
             // $('#modalCloseMessage').modal('show')
-            const clientName = document.getElementById("chat-client-name").innerText
-            $('#spanInBodyModalCloseMessage').text("Mover o atendimento de "+clientName+" ("+clientNumber+") para a fila de " )
-            document.getElementById("buttonMover").setAttribute('onclick', `updateStatusAtendimento(${clientNumber})`)
-        }
-    }
+      //      const clientName = document.getElementById("chat-client-name").innerText
+        //    $('#spanInBodyModalCloseMessage').text("Mover o atendimento de "+clientName+" ("+clientNumber+") para a fila de " )
+          //  document.getElementById("buttonMover").setAttribute('onclick', `updateStatusAtendimento(${clientNumber})`)
+        //}
+    //}
 
     function butAtender(atendimentoId){
       var userEmail = document.getElementById('my-mail').innerText
@@ -389,7 +388,6 @@
     function changeStatus(atendimentoId, type, renderAutomatic = true){
             //render msg of DB
       if (typeof atendimentoId !== 'undefined') {
-
           //RENDER MESSAGES IN CHAT
           fetch('https://localhost:3000/wpp/message-chat-client', {
             method: 'POST',
@@ -413,7 +411,38 @@
       } else {
         disableComponents()
       }
+    }
+    // listAtendentes()
+    function listAtendentes(){
+      document.getElementById("listAtendentes").innerText = ''
 
+      fetch('https://localhost:3000/list-atendentes')
+      .then(res => res.json())
+      .then(atendentes => {
+          if (atendentes.length > 0){
+            for (var atendente of atendentes){
+              renderListAtendentes(atendente);
+            }
+          }
+      })
+      .catch(err => {
+      console.log(err)
+      })
+    }
+
+    function renderListAtendentes(atendente){
+       $('#listAtendentes').prepend(
+        `<div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+            <div class="d-flex align-items-center flex-fill">
+                <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${atendente.fullName}&background=random&color=ff0000&bold=true">
+                <div class="d-flex flex-column ps-3">
+                    <h6 class="fw-bold mb-0 small-14">${atendente.fullName}</h6>
+                    <span class="text-muted">${atendente.email}</span>
+                    <div class="text-muted"><i class="icofont-engineer"></i> ${atendente.perfil} | ${atendente.setor} </div>
+                </div>
+            </div>
+        </div>`
+      )
     }
 
         </script>

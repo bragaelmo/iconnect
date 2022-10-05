@@ -125,8 +125,9 @@
                                                         <div class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
                                                             <div class="input-group flex-nowrap input-group-lg">
                                                                 <div style="transform: translateY(-6px);">
-                                                                    <button class="btn btn-secondary" id="buttonMoverAtendimento" data-bs-toggle="modal" data-bs-target="#modaltransferir">
+                                                                    <button class="btn btn-secondary" id="buttonMoverAtendimento" data-bs-toggle="modal"data-bs-target="#modaltransferir">
                                                                         <span style="font-size: 15px;" >Transferir</span>
+                                                                         {{!-- onclick="listAtendentes()"  --}}
                                                                     </button>
                                                                     <button class="btn btn-primary" id="buttonAtender">
                                                                         <span style="font-size: 15px;" >Atender</span>
@@ -170,8 +171,8 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <ul class="nav nav-tabs tab-body-header rounded d-inline-flex" role="tablist">
-                                                                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nav-agentes" role="tab">Agentes</a></li>
-                                                                <li class="nav-item" style="display: none;"><a class="nav-link" data-bs-toggle="tab" href="#nav-equipe" role="tab">Equipe</a></li>
+                                                                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nav-agentes" role="tab">Atendentes</a></li>
+                                                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#nav-equipe" role="tab">Supervisor</a></li>
                                                             </ul>
                                                             <div class="tab-content mt-2">
                                                                 <div class="tab-pane fade show active" id="nav-agentes" role="tabpanel">
@@ -185,8 +186,8 @@
                                                                     </div>
                                                                     <div class="card">
                                                                         <div class="card-body">
-                                                                            <div class="flex-grow-1">
-                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
+                                                                            <div class="flex-grow-1" id="listAtendentes">
+                                                                                {{!-- <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
                                                                                     <div class="d-flex align-items-center flex-fill">
                                                                                         <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=mario&background=random&color=ff0000&bold=true">
                                                                                         <div class="d-flex flex-column ps-3">
@@ -265,7 +266,7 @@
                                                                                             <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>
+                                                                                </div> --}}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -275,7 +276,7 @@
                                                                         <div class="card-body">
                                                                             <!-- List Group: with badge left side -->
                                                                             <ul class="list-group list-group-custom">
-                                                                                <li class="list-group-item">
+                                                                                {{!-- <li class="list-group-item">
                                                                                     <div class="btn btn-outline-warning" style="width: 100%; text-align: left;">
                                                                                         <span class="badge bg-warning me-2">17</span>
                                                                                         Geral
@@ -298,7 +299,7 @@
                                                                                         <span class="badge bg-info me-2">1</span>
                                                                                         Financeiro
                                                                                     </div>
-                                                                                </li>
+                                                                                </li> --}}
                                                                             </ul>
                                                                         </div>
                                                                     </div>
@@ -589,17 +590,13 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+
 
 
 <script>
     //var server = "https://pag.rexinternet.com.br:3000";
     //render message chat
-    socket.on('chatData', () => {
-        console.log('CHEGOU');
-    })
 
-    socket.emit('ready');
 
 
     const messages = document.getElementById('chatBody');
