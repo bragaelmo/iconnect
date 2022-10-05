@@ -137,6 +137,7 @@ router.get('/painel-supervisor/gerenciamento', (req,res) => {
 //webhook
 router.post("/webhook", async (req,res) => {
     const hook = req.body;
+    console.log('ZENVIA ' + JSON.stringify(hook))
     try {
         //if it's client message
         if(hook.message){
@@ -148,6 +149,7 @@ router.post("/webhook", async (req,res) => {
 
             socketIO.emit('receivedMessage', {from})
 
+            console.log(hook.message)
             res.status(200).send({message: "enviado"});
         }
 

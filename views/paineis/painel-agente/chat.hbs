@@ -641,8 +641,8 @@
 
     //Função da rota pra enviar para o cliente
     function sendMessageToClient(clientNumber,message){
-
-      fetch('https://localhost:3000/wpp/send-message', {
+      fetch('https://pag.rexinternet.com.br:3000/wpp/send-message',{
+      //fetch('https://localhost:3000/wpp/send-message', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

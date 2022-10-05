@@ -42,7 +42,8 @@
            // $('#textarea').emojioneArea({
            //     pickerPosition: "top"
            // });//
-    var server = "https://localhost:3000";
+    //var server = "https://localhost:3000";
+    var server = "pag.rexinternet.com.br:3000";
     var socket = io.connect(server);
 
     //render all messages that received
@@ -146,7 +147,8 @@
     startListClients()
     function startListClients(){
       $('.msg').fadeOut(600, function(){ $(this).remove();});
-      fetch('https://localhost:3000/wpp/last-message-client')
+       fetch('https://pag.rexinternet.com.br:3000/wpp/last-message-client')
+      //fetch('https://localhost:3000/wpp/last-message-client')
         .then(res => res.json())
         .then(data => {
             for(clients of data){
@@ -192,7 +194,8 @@
     //startListClientsEmAtendimento()
     function startListClientsEmAtendimento(){
       $('.msg').fadeOut(600, function(){ $(this).remove();});
-      fetch('https://localhost:3000/wpp/last-message-client-all')
+      fetch('https://pag.rexinternet.com.br:3000/wpp/last-message-client-all')
+     //fetch('https://localhost:3000/wpp/last-message-client-all')
       .then(res => res.json())
       .then(data => {
         for(clients of data){
@@ -296,7 +299,8 @@
 
      function renderMessagesInChatT(arr,clientNumber){
       //take name
-      fetch('https://localhost:3000/wpp/client-data',{
+      fetch('https://pag.rexinternet.com.br:3000/wpp/client-data',{
+      //fetch('https://localhost:3000/wpp/client-data',{
         method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -349,7 +353,8 @@
 
 
     function updateStatusAtendimento(clientNumber){
-      fetch('https://localhost:3000/wpp/updatestatus', {
+      fetch('https://pag.rexinternet.com.br:3000/wpp/updatestatus',{
+     // fetch('https://localhost:3000/wpp/updatestatus', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -389,7 +394,8 @@
 
 
           //RENDER MESSAGES IN CHAT
-          fetch('https://localhost:3000/wpp/message-chat-client', {
+          fetch('https://pag.rexinternet.com.br:3000/wpp/message-chat-client',{
+          //fetch('https://localhost:3000/wpp/message-chat-client', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
