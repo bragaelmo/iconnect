@@ -16,7 +16,6 @@ var hbs = require('hbs');
 var helpers = require('./components/hbsHelpers');
 
 const path = require('path');
-
 const server = require('http').createServer({key: key,
                                               cert: cert,
                                               ca: ca

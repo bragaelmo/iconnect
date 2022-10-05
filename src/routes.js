@@ -267,4 +267,3 @@ router.post('/wpp/updatestatus', async (req,res) => {
 })
 
 module.exports = router;
-//teste
