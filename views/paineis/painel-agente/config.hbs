@@ -1,9 +1,11 @@
 <div id="mytask-layout" class="theme-indigo">
-    {{#if_cond sidebars '==' 'aget'}}
+        {{!-- {{#if_cond sidebars '==' 'aget'}}
         {{> sidebarAgente}}
         {{else}}
         {{> sidebarSupervisor}}
-        {{/if_cond}}
+        {{/if_cond}} --}}
+
+         {{> sidebarAgente}}
     <!-- main body area -->
     <div class="main px-lg-4 px-md-4">
         <!-- Body: Header -->
@@ -40,8 +42,8 @@
                                             <label for="emailaddress" class="form-label">Nascimento</label>
                                             <input type="date" class="form-control" id="emailaddress" required>
                                         </div>
-                                        
-                                        
+
+
                                     </div>
                                     <button type="submit" class="btn btn-primary mt-4">Salvar</button>
                                 </form>
@@ -60,7 +62,7 @@
                                             <label for="emailaddress" class="form-label">Email</label>
                                             <input type="email" class="form-control" id="emailaddress" required>
                                         </div>
-                                        
+
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="text-input1" class="form-label">Senha Atual</label>
