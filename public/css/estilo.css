@@ -18070,8 +18070,9 @@ a#em-atendimento-style.active {
     background-color: #FFBA20;
 }
 button#buttonMoverAtendimento {
-    background-color: #FFBA20;
-    color: black;
+    background-color: #133AB6;
+    border-color: white;
+    color: white;
 }
 .dateHourChat{
     font-size: 10px;
