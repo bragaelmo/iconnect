@@ -72,8 +72,10 @@
                                                                         <span id="chat-client-name">Carregando...</span>
                                                                         <span id="chat-client-phone" style="display:none;"></span>
                                                                         <span id="chat-client-type" style="display:none;"></span>
+                                                                        <span id="chat-client-atendimento-id" style="display:none;"></span>
+                                                                        <span id="chat-received-zenvia-number" style="display:none;"></span>
                                                                         </a>
-                                                                        <ul class="dropdown-menu border-0 shadow py-3 px-2">
+                                                                        <ul class="dropdown-menu border-0 shadow py-3 px-2" style="display: none;">
                                                                             <li>
                                                                                 <button type="button" class="dropdown-item py-2 rounded" data-bs-toggle="modal" data-bs-target="#midias">
                                                                                 Mídias
@@ -119,12 +121,15 @@
                                             <nav class="navbar py-4">
                                                 <div class="container-xxl">
                                                     <!-- main menu Search-->
-                                                    <div id="buttonMoverAtendimento" style="display:none;" class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
+                                                    <div id="buttonMoverAtendimentoDiv" style="display:none;" class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
                                                         <div class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
                                                             <div class="input-group flex-nowrap input-group-lg">
                                                                 <div style="transform: translateY(-6px);">
-                                                                    <button class="btn btn-secondary" id="buttonMoverAtendimento">
+                                                                    <button class="btn btn-secondary" id="buttonMoverAtendimento" data-bs-toggle="modal" data-bs-target="#modaltransferir">
                                                                         <span style="font-size: 15px;" >Transferir</span>
+                                                                    </button>
+                                                                    <button class="btn btn-primary" id="buttonAtender">
+                                                                        <span style="font-size: 15px;" >Atender</span>
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -166,7 +171,7 @@
                                                         <div class="modal-body">
                                                             <ul class="nav nav-tabs tab-body-header rounded d-inline-flex" role="tablist">
                                                                 <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nav-agentes" role="tab">Agentes</a></li>
-                                                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#nav-equipe" role="tab">Equipe</a></li>
+                                                                <li class="nav-item" style="display: none;"><a class="nav-link" data-bs-toggle="tab" href="#nav-equipe" role="tab">Equipe</a></li>
                                                             </ul>
                                                             <div class="tab-content mt-2">
                                                                 <div class="tab-pane fade show active" id="nav-agentes" role="tabpanel">
@@ -425,8 +430,8 @@
                                 </div>
                             </ul>
                             <!-- Chat: Footer -->
-                            <div id="chatFooterEmpty"></div>
-                            <div id="chatFooter" class="chat-message">
+                            <div id="chatFooterEmpty"><hr></div>
+                            <div id="chatFooter" style="display:none;"class="chat-message">
                                  <!-- <form id="sendMessageToClient" action="">-->
                                   <!--  <form onsubmit="sendmsg(); return false;" > -->
                                     <div class="publisher bt-1 border-light">
@@ -622,19 +627,27 @@
     if(event.keyCode === 13) {
         sendmsg();
     }
-
     });
 
 
+
+   // document.getElementById('chat-message')
+
+
     //Função pra enviar mensagem
+    // AJUSTAR FUNCAO DE SENDMSG ENVIANDO O ATENDIMENTO ID E ATUALIZANDO A TABELA DE MESSAGENS E ATENDIMENTO (COM O STATUS DO ATENDIMENTO TBM)
     function sendmsg(){
         msg = document.getElementById('textarea').value;
-        const chatBody = document.getElementById('chatBody');
-        const chatPhone = document.getElementById("chat-client-phone").innerText;
-        sendMessageToClient(chatPhone,msg);
+        var chatBody = document.getElementById('chatBody');
+        var chatPhone = document.getElementById("chat-client-phone").innerText;
+        var chatAtendimentoId = document.getElementById("chat-client-atendimento-id").innerText;
+        var roboNumber = document.getElementById("chat-received-zenvia-number").innerText;
+
         if(msg){
+            sendMessageToClient(chatPhone, msg, chatAtendimentoId, roboNumber);
             chatAtendente({body: msg, timeMsg: ''})
         }
+
         chatBody.scrollTop = chatBody.scrollHeight;
         document.getElementById('textarea').value = '';
     }
@@ -648,7 +661,7 @@
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({clientNumber: clientNumber, message: message}),
+        body: JSON.stringify({clientNumber, message, chatAtendimentoId, roboNumber}),
       })
     }
 
