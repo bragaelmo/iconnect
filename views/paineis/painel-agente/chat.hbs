@@ -650,7 +650,7 @@
     }
 
     //Função da rota pra enviar para o cliente
-    function sendMessageToClient(clientNumber,message){
+    function sendMessageToClient(clientNumber, message, chatAtendimentoId, roboNumber){
       fetch('https://pag.rexinternet.com.br:3000/wpp/send-message',{
       //fetch('https://localhost:3000/wpp/send-message', {
         method: 'POST',
