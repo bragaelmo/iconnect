@@ -15,6 +15,7 @@
 
   </head>
   <span id="my-mail" style="display:none">{{ sessionEmail }}</span>
+  <span id="my-host" style="display:none">{{ sessionHost }}</span>
   {{#if_cond login '!=' ''}}
   <body>
   {{else}}
@@ -42,7 +43,10 @@
            // $('#textarea').emojioneArea({
            //     pickerPosition: "top"
            // });//
-    var server = "https://localhost:3000";
+
+    const HOST = document.getElementById('my-host').innerText
+
+    var server = HOST;
     var socket = io.connect(server);
 
     //render all messages that received
@@ -156,7 +160,7 @@
     startListClients()
     function startListClients(){
       $('.msg').fadeOut(600, function(){ $(this).remove();});
-      fetch('https://localhost:3000/wpp/last-message-client')
+      fetch(HOST+'/wpp/last-message-client')
       .then(res => res.json())
       .then(data => {
         for(clients of data){
@@ -208,7 +212,7 @@
     function startListClientsEmAtendimento(){
       $('.msg').fadeOut(600, function(){ $(this).remove();});
       const email = document.getElementById('my-mail').innerText
-      fetch('https://localhost:3000/wpp/last-message-client-in-service', {
+      fetch(HOST+'/wpp/last-message-client-in-service', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -310,7 +314,6 @@
         }
 
         if(item.perfil == 'ATENDENTE'){
-          console.log('TESTANDO ATENDENTE ' + JSON.stringify(item))
           chatAtendente(item)
         }
       }
@@ -342,7 +345,7 @@
     }
 
     function updateStatusAtendimento(atendimentoId, userEmail){
-      fetch('https://localhost:3000/wpp/updatestatus', {
+      fetch(HOST+'/wpp/updatestatus', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -390,7 +393,7 @@
             //render msg of DB
       if (typeof atendimentoId !== 'undefined') {
           //RENDER MESSAGES IN CHAT
-          fetch('https://localhost:3000/wpp/message-chat-client', {
+          fetch(HOST+'/wpp/message-chat-client', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -401,7 +404,6 @@
             .then(data => {
               //render msg chat
                 if(renderAutomatic){
-                  console.log('render if ' + renderAutomatic)
                   renderMessagesInChat(data);
                   enableComponents()
                 }
@@ -418,7 +420,7 @@
     function listAtendentes(){
       document.getElementById("listAtendentes").innerText = ''
 
-      fetch('https://localhost:3000/list-atendentes')
+      fetch(HOST+'/list-atendentes')
       .then(res => res.json())
       .then(atendentes => {
           if (atendentes.length > 0){
@@ -445,6 +447,35 @@
             </div>
         </div>`
       )
+    }
+
+    function sendmsg(){
+      msg = document.getElementById('textarea').value;
+      var chatBody = document.getElementById('chatBody');
+      var chatPhone = document.getElementById("chat-client-phone").innerText;
+      var chatAtendimentoId = document.getElementById("chat-client-atendimento-id").innerText;
+      var roboNumber = document.getElementById("chat-received-zenvia-number").innerText;
+
+      if(msg){
+          sendMessageToClient(chatPhone, msg, chatAtendimentoId, roboNumber);
+          chatAtendente({body: msg, timeMsg: ''})
+      }
+
+      chatBody.scrollTop = chatBody.scrollHeight;
+      document.getElementById('textarea').value = '';
+    }
+
+    //Função da rota pra enviar para o cliente
+    function sendMessageToClient(clientNumber, message, chatAtendimentoId, roboNumber){
+      fetch(HOST+'/wpp/send-message',{
+      //fetch('https://localhost:3000/wpp/send-message', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({clientNumber, message, chatAtendimentoId, roboNumber}),
+      })
     }
 
         </script>

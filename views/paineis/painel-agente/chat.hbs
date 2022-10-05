@@ -627,44 +627,6 @@
     });
 
 
-
-   // document.getElementById('chat-message')
-
-
-    //Função pra enviar mensagem
-    // AJUSTAR FUNCAO DE SENDMSG ENVIANDO O ATENDIMENTO ID E ATUALIZANDO A TABELA DE MESSAGENS E ATENDIMENTO (COM O STATUS DO ATENDIMENTO TBM)
-    function sendmsg(){
-        msg = document.getElementById('textarea').value;
-        var chatBody = document.getElementById('chatBody');
-        var chatPhone = document.getElementById("chat-client-phone").innerText;
-        var chatAtendimentoId = document.getElementById("chat-client-atendimento-id").innerText;
-        var roboNumber = document.getElementById("chat-received-zenvia-number").innerText;
-
-        if(msg){
-            sendMessageToClient(chatPhone, msg, chatAtendimentoId, roboNumber);
-            chatAtendente({body: msg, timeMsg: ''})
-        }
-
-        chatBody.scrollTop = chatBody.scrollHeight;
-        document.getElementById('textarea').value = '';
-    }
-
-    //Função da rota pra enviar para o cliente
-    function sendMessageToClient(clientNumber, message, chatAtendimentoId, roboNumber){
-      fetch('https://pag.rexinternet.com.br:3000/wpp/send-message',{
-      //fetch('https://localhost:3000/wpp/send-message', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({clientNumber, message, chatAtendimentoId, roboNumber}),
-      })
-    }
-
-
-
-
     function search_conversation() {
         let input = document.getElementById('searchbar').value
         input=input.toLowerCase();

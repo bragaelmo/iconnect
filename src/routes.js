@@ -85,6 +85,7 @@ function getSessionStrings(req){
         sessionName: name,
         sessionFullName: req.session.name,
         sessionEmail: req.session.login,
+        sessionHost: process.env.HOST + ':' + process.env.PORT
     }
 }
 // ROTAS DO PAINEL DE AGENTE ============================================
