@@ -212,3 +212,15 @@ exports.saveusers = async (db,email,senha,user) => {
     db.query(sqlInsert,
       [email,senha,user,'pendente']);
 }
+
+exports.listAtendentes = async (db) => {
+  const sql = "SELECT email, fullName, perfil, setor FROM users"
+
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, function(err,results) {
+        if(err) throw err;
+        return resolve(results)
+    })
+  });
+  return result
+}

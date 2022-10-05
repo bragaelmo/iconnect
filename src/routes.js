@@ -4,7 +4,7 @@ const db = dbConnect();
 const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
-const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers, updateStatusMessage, getMessage, updateAtendimento } = require('./services/zenvia');
+const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers, updateStatusMessage, getMessage, updateAtendimento, listAtendentes } = require('./services/zenvia');
 const { route } = require("../zenvia-routes");
 const { atendimento } = require("./services/atendimento");
 
@@ -138,6 +138,7 @@ router.get('/painel-supervisor/gerenciamento', (req,res) => {
 //webhook
 router.post("/webhook", async (req,res) => {
     const hook = req.body;
+    console.log('ZENVIA :: ' + JSON.stringify(hook))
     try {
         //if it's client message
         if(hook.message){
@@ -265,6 +266,15 @@ router.post('/wpp/updatestatus', async (req,res) => {
 
         res.status(200).json({ok: 'ok'});
         console.log('ok ???')
+    } catch (error){
+        res.status(400).json({erro: error.message});
+    }
+})
+
+router.get('/list-atendentes', async (req,res) => {
+    try {
+        const response = await listAtendentes(db)
+        res.status(200).json(response);
     } catch (error){
         res.status(400).json({erro: error.message});
     }
