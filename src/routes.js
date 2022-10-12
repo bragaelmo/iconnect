@@ -4,7 +4,7 @@ const db = dbConnect();
 const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
-const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers, updateStatusMessage, getMessage, updateAtendimento, listAtendentes } = require('./services/zenvia');
+const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers, updateStatusMessage, getMessage, updateAtendimento, listAtendentes, createAtendimento, transferAtendimento, lastMessageAll } = require('./services/zenvia');
 const { route } = require("../zenvia-routes");
 const { atendimento } = require("./services/atendimento");
 
@@ -166,10 +166,10 @@ router.post("/webhook", async (req,res) => {
     }
 });
 
-router.get("/wpp/last-message-client", async (req, res) => {
-    //render messages of db in messages visualizer
+router.post("/wpp/last-message-client", async (req, res) => {
+    const {email} = req.body
     try{
-        const response = await lastMessage(db, 'EM_ESPERA')
+        const response = await lastMessageAll(db, 'EM_ESPERA', email)
         res.json(response);
         res.status(200);
 
@@ -263,7 +263,7 @@ router.post('/wpp/updatestatus', async (req,res) => {
     try {
         //await updateStatusMessage(db, String(from_wa_id))
 
-        await updateAtendimento(db, userEmail, atendimentoId)
+        await updateAtendimento(db, userEmail, atendimentoId, 'EM_ATENDIMENTO')
 
         res.status(200).json({ok: 'ok'});
         console.log('ok ???')
@@ -280,5 +280,25 @@ router.get('/list-atendentes', async (req,res) => {
         res.status(400).json({erro: error.message});
     }
 })
+
+router.post('/transfer-service', async (req,res) => {
+    const { atendimentoId,
+            emailAtendenteFromTransfer,
+            emailAtendenteToTransfer,
+            phoneClient,
+            phoneRobo
+        } = req.body
+    try {
+        await transferAtendimento(db, atendimentoId,
+            emailAtendenteFromTransfer,
+            emailAtendenteToTransfer,
+            phoneClient,
+            phoneRobo)
+        res.status(200).json('ok');
+    } catch (error){
+        res.status(400).json({erro: error.message});
+    }
+})
+
 
 module.exports = router;
