@@ -19,7 +19,7 @@ exports.atendimento = async (db, hook) => {
     atendimento.length < 1 ||
     atendimento.updated_at < yesterday
   ){
-    atendimento = await createAtendimento(db, contact, hook.message.to)
+    atendimento = await createAtendimento(db, contact.wa_id, hook.message.to)
     console.log('[atendimento] Atendimento criado ' + JSON.stringify(atendimento))
   }
 

@@ -48,24 +48,40 @@ exports.getMessage = async (db, from) => {
   return result
 }
 
-exports.createAtendimento = async (db, objContact, to)=>{
-  const sqlInsert = 'INSERT INTO atendimento(cliente_wa_id, atendente_wa_id, status) VALUES(?,?,"EM_ESPERA")'
+exports.createAtendimento = async (db, clientPhone, roboPhone, emailAtendente = null, transferBy = null)=>{
+  const sqlInsert = 'INSERT INTO atendimento(cliente_wa_id, atendente_wa_id, status, user_email, transfer_by) VALUES(?,?,"EM_ESPERA",? ,?)'
   const resultInsert = await new Promise((resolve, reject) => {
-    db.query(sqlInsert, [objContact.wa_id, to], function(err,resultsInsert){
+    db.query(sqlInsert, [clientPhone, roboPhone, emailAtendente, transferBy], function(err,resultsInsert){
       if (err) { throw err};
       return resolve(resultsInsert);
     });
   });
 
   if(resultInsert.affectedRows > 0){
-    return await this.getAtendimento(db, objContact.wa_id, to)
+    return await this.getAtendimento(db, clientPhone, roboPhone)
   }
 }
 
-exports.updateAtendimento = async (db, user, id) => {
-  const sqlUpdate = 'UPDATE atendimento SET status = "EM_ATENDIMENTO", user_email = ? WHERE id = ?'
+exports.transferAtendimento = async (db, atendimentoId,
+  emailAtendenteFromTransfer,
+  emailAtendenteToTransfer,
+  phoneClient,
+  phoneRobo) => {
+
+  // Atualiza o status do atendimento atual para 'TRANSFERIDO'
+  this.updateAtendimento(db, emailAtendenteFromTransfer, atendimentoId, 'TRANSFERIDO')
+
+  // Cria novo atendimento
+  const atendimento = this.createAtendimento(db, phoneClient, phoneRobo, emailAtendenteToTransfer, emailAtendenteFromTransfer)
+  if (atendimento && atendimento.id){
+    console.log('[transferAtendimento] Atendimento transferido ' + JSON.stringify(atendimento))
+  }
+}
+
+exports.updateAtendimento = async (db, userEmail, id, status, transferBy = null) => {
+  const sqlUpdate = 'UPDATE atendimento SET status = ?, user_email = ?, transfer_by = ? WHERE id = ?'
   const result = await new Promise((resolve, reject) => {
-    db.query(sqlUpdate, [user, id], (error, results, fields) => {
+    db.query(sqlUpdate, [status, userEmail, transferBy, id], (error, results, fields) => {
       if (error){
         return console.error(error.message);
       }
@@ -74,6 +90,7 @@ exports.updateAtendimento = async (db, user, id) => {
   })
   return result
 }
+
 exports.getAtendimento = async (db, from, to) => {
   const sql = 'SELECT * FROM atendimento WHERE cliente_wa_id = ? AND atendente_wa_id = ? ORDER BY created_at DESC'
   const result = await new Promise((resolve, reject) => {
@@ -101,6 +118,34 @@ exports.updateStatusMessage = async (db, number) => {
       return resolve(results)
     })
   })
+  return result
+}
+
+exports.lastMessageAll = async (db, status, userEmail = '') => {
+
+  var sql = `
+  SELECT atendimento.transfer_by, atendimento.cliente_wa_id, atendimento.atendente_wa_id, atendimento.id AS atendimentoId, atendimento.status AS atendimentoStatus, atendimento.user_email AS atendimentoUserEmail,
+  messages.id AS message_id, messages.body, messages.created_at AS messageCreatedAt,
+  contacts.name, contacts.perfil
+  FROM atendimento
+  INNER JOIN messages
+  ON atendimento.cliente_wa_id = messages.from_wa_id
+  INNER JOIN contacts
+  ON contacts.wa_id = messages.from_wa_id
+  WHERE atendimento.atendente_wa_id = messages.to_wa
+  AND atendimento.status = 'EM_ESPERA'
+  AND (atendimento.user_email IS NULL OR atendimento.user_email = '${userEmail}')
+  AND messages.created_at
+  IN (SELECT MAX(messages.created_at) AS created_at FROM messages GROUP BY messages.from_wa_id)
+  `
+
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, [status], function(err,results) {
+        if(err) throw err;
+        return resolve(results)
+    })
+  });
+  console.log('RESULT ::: ' + JSON.stringify(result))
   return result
 }
 
@@ -133,6 +178,7 @@ exports.lastMessage = async (db, status, userEmail = '') => {
         return resolve(results)
     })
   });
+  console.log('RESULT ::: ' + JSON.stringify(result))
   return result
 }
 
@@ -224,3 +270,15 @@ exports.listAtendentes = async (db) => {
   });
   return result
 }
+
+// exports.transferService = async (db) => {
+//   const sql = "SELECT email, fullName, perfil, setor FROM users"
+
+//   const result = await new Promise((resolve, reject) => {
+//     db.query(sql, function(err,results) {
+//         if(err) throw err;
+//         return resolve(results)
+//     })
+//   });
+//   return result
+// }
