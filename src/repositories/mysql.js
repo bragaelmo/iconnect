@@ -1,4 +1,5 @@
 const mysql = require("mysql");
+const logger = require("../libs/logger");
 
 exports.dbConnect = () => {
   const db = mysql.createConnection({
@@ -7,15 +8,16 @@ exports.dbConnect = () => {
       password: process.env.DB_PASS,
       database: process.env.DB_DATABASE,
       charset: "utf8mb4",
-      debug: false
+      debug: false,
+      connectTimeout: 60000
   });
 
   db.connect((err) => {
       if (err) {
-          console.log('Erro ao conectar no banco de dados... ', err.message)
+          logger.error('Erro ao conectar no banco de dados... ', err.message)
           return
       }
-      console.log('Banco de dados conectado!')
+      logger.info('Banco de dados conectado!')
   });
 
   return db;
