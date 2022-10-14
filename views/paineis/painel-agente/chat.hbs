@@ -125,7 +125,7 @@
                                                         <div class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
                                                             <div class="input-group flex-nowrap input-group-lg">
                                                                 <div style="transform: translateY(-6px);">
-                                                                    <button class="btn btn-secondary" id="buttonMoverAtendimento" data-bs-toggle="modal"data-bs-target="#modaltransferir">
+                                                                    <button class="btn btn-secondary" id="buttonMoverAtendimento" data-bs-toggle="modal" data-bs-target="#modaltransferir">
                                                                         <span style="font-size: 15px;" >Transferir</span>
                                                                          {{!-- onclick="listAtendentes()"  --}}
                                                                     </button>
@@ -447,6 +447,19 @@
                                         </button>
                                     </div>
                                <!-- </form>-->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Erro -->
+                    <div class="modal fade frame-error" tabindex="-1" aria-labelledby="modalmessageerror" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-error">
+                                <img id="img-error" src="/images/alert.png" width="44" height="38" />
+                                <span class="title-error">Oh rex!</span>
+                                <p id="p-error">Ocorreu um erro ao processar a sua solicitação.</p>
+                                <p id="p-error-message">Se o erro persistir, entre em contato com o administrador do sistema e informe o erro abaixo:</p>
+                                <p id="messageToError"></p>
+                                <div class="button-error">Fechar</div>
                             </div>
                         </div>
                     </div>

@@ -18311,3 +18311,95 @@ button#buttonMoverAtendimento {
     z-index: -1;
     width: 20px;
 }
+
+
+
+.modal-error {
+    position: absolute;
+    width: 380px;
+    height: 300px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 4px 8px 12px 0 rgba(0,0,0,0.4);
+    text-align: center;
+    animation: show-modal .7s ease-in-out;
+}
+
+img#img-error {
+    margin-top: 24px;
+}
+
+.title-error {
+    display: block;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 400;
+    margin: 14px 0 5px 0;
+}
+
+#p-error {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 19px;
+    margin: 0;
+    padding: 0 30px;
+}
+#p-error-message{
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 19px;
+    margin-top:20px;
+    padding: 0 30px;
+}
+#messageToError {
+    font-size: 12px;
+    font-weight: bold;
+    background: #D3D3D3;
+    overflow-y: auto;
+}
+
+.button-error {
+    position: absolute;
+    height: 40px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #F65656;
+    color: #fff;
+    line-height: 40px;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background .3s ease-in-out;
+}
+
+div.button-error:hover {
+    background: blue;
+}
+
+@keyframes show-modal {
+    0% {
+        transform: scale(0);
+    }
+    60% {
+        transform: scale(1.1);
+    }
+    80% {
+        transform: scale(.95);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes hide-modal {
+    0% {
+        transform: scale(1);
+    }
+    20% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}

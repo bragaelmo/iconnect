@@ -64,7 +64,7 @@
       }
 
       if(chatOpen != ''){
-        changeStatus(data.atendimentoId, renderChatAutomatic)
+        loadMessageInChatToVisualizer(data.atendimentoId, renderChatAutomatic)
       }
 
       if($('#em-espera-style').hasClass('active')){
@@ -186,7 +186,9 @@
           renderInMessageVisualizer(client);
         }
       })
-      .catch(e => console.log(e));
+      .catch(err => {
+        showModalError(err.message)
+      })
     }
 
     function renderInMessageVisualizer(obj){
@@ -200,7 +202,7 @@
 
         $('#contact_area').prepend(
             `<div class="msg">
-                <a onclick="changeStatus(${obj.atendimentoId})">
+                <a onclick="loadMessageInChatToVisualizer(${obj.atendimentoId})">
                 <span id="infoMsg"></span>
                 <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
                     <div class="d-flex">
@@ -244,7 +246,9 @@
           renderInMessageVisualizerEmAtendimento(client);
         }
       })
-      .catch(e => console.log(e));
+      .catch(err => {
+        showModalError(err.message)
+      })
     }
 
     onclickCloseChatBody()
@@ -274,7 +278,7 @@
 
       $('#contact_area_atendimento').prepend(
           `<div class="msg">
-            <a onclick="changeStatus(${obj.atendimentoId})" >
+            <a onclick="loadMessageInChatToVisualizer(${obj.atendimentoId})" >
               <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
                   <div class="d-flex">
                       <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
@@ -291,16 +295,14 @@
     }
 
     function renderMessagesInChat(arr){
-      //render info in chat
+      // Apaga as mensagens em aberto do chat
+      document.getElementById('chatBody').innerHTML = ''
 
       var nameClient = ''
       var phoneClient = ''
       var statusClient = ''
       var atendimentoId = ''
       var roboNumber = ''
-
-      // Apaga as mensagens em aberto do chat
-      document.getElementById('chatBody').innerHTML = ''
 
       for(item of arr){
         var timeMsg = item.created_at;
@@ -349,8 +351,10 @@
         document.getElementById("buttonMoverAtendimento").style.display = 'none'
       }
 
-      // Scroll to message more recent
-      chatBody.scrollTop = chatBody.scrollHeight;
+      // Scroll to message more recent after 500ms
+      setTimeout(()=>{
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }, 500)
     }
 
     function updateStatusAtendimento(atendimentoId, userEmail){
@@ -361,10 +365,9 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({atendimentoId, userEmail}),
+      }).catch(err => {
+        showModalError(err.message)
       })
-
-      //disableComponents()
-      //location.reload()
     }
 
 //    function modalMoverAtendimento(clientNumber){
@@ -398,7 +401,8 @@
       document.getElementById("chatBodyEmpty").style.display = "none";
     }
 
-    function changeStatus(atendimentoId, renderAutomatic = true){
+    //function changeStatus(atendimentoId, renderAutomatic = true){
+    function loadMessageInChatToVisualizer(atendimentoId, renderAutomatic = true){
             //render msg of DB
       if (typeof atendimentoId !== 'undefined') {
           //RENDER MESSAGES IN CHAT
@@ -409,21 +413,27 @@
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({atendimento_id: atendimentoId}),
-          }).then(res => res.json())
-            .then(data => {
-              //render msg chat
-                if(renderAutomatic){
-                  renderMessagesInChat(data);
-                  enableComponents()
-                }
-            })
-            .catch(err => {
-            console.log(err)
+          })
+          .then(res => res.json())
+          .then(data => {
+            //render msg chat
+            if(renderAutomatic){
+              renderMessagesInChat(data);
+              enableComponents()
+            }
+          })
+          .catch(err => {
+            showModalError(err.message)
           })
 
       } else {
         disableComponents()
       }
+    }
+
+    function showModalError(message){
+      $('#messageToError').text(message)
+      $('.frame-error').modal('show');
     }
 
     function listAtendentes(){
@@ -439,7 +449,7 @@
           }
       })
       .catch(err => {
-      console.log(err)
+        showModalError(err.message)
       })
     }
 
@@ -490,6 +500,8 @@
             phoneClient,
             phoneRobo
             }),
+        }).catch(err => {
+          showModalError(err.message)
         })
         location.reload()
       }
@@ -521,6 +533,8 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({clientNumber, message, chatAtendimentoId, roboNumber}),
+      }).catch(err => {
+        showModalError(err.message)
       })
     }
 
