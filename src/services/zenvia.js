@@ -11,7 +11,9 @@ exports.getContact = async (db, from) => {
   const sql = 'SELECT * FROM contacts WHERE wa_id = ?'
   const result = await new Promise((resolve, reject) => {
       db.query(sql, from, function(err,results){
-        if(err) {throw err};
+        if(err) {
+          return reject(err)
+        }
         return resolve(results);
       })
   });
@@ -27,7 +29,9 @@ exports.saveContact = async (db, from, name) => {
   const sqlInsert = 'INSERT INTO contacts(wa_id,name) VALUES(?,?)'
   const resultInsert = await new Promise((resolve, reject) => {
     db.query(sqlInsert, [from, name], function(err,resultsInsert){
-      if (err) { throw err};
+      if(err) {
+        return reject(err)
+      }
       return resolve(resultsInsert);
     });
   });
@@ -41,7 +45,9 @@ exports.getMessage = async (db, from) => {
   const sql = 'SELECT * FROM messages WHERE from_wa_id = ? ORDER BY created_at DESC'
   const result = await new Promise((resolve, reject) => {
     db.query(sql, from, function(err,results){
-      if(err) {throw err};
+      if(err) {
+        return reject(err)
+      }
       return resolve(results);
     })
   });
@@ -52,7 +58,9 @@ exports.createAtendimento = async (db, clientPhone, roboPhone, emailAtendente = 
   const sqlInsert = 'INSERT INTO atendimento(cliente_wa_id, atendente_wa_id, status, user_email, transfer_by) VALUES(?,?,"EM_ESPERA",? ,?)'
   const resultInsert = await new Promise((resolve, reject) => {
     db.query(sqlInsert, [clientPhone, roboPhone, emailAtendente, transferBy], function(err,resultsInsert){
-      if (err) { throw err};
+      if(err) {
+        return reject(err)
+      }
       return resolve(resultsInsert);
     });
   });
@@ -81,9 +89,9 @@ exports.transferAtendimento = async (db, atendimentoId,
 exports.updateAtendimento = async (db, userEmail, id, status, transferBy = null) => {
   const sqlUpdate = 'UPDATE atendimento SET status = ?, user_email = ?, transfer_by = ? WHERE id = ?'
   const result = await new Promise((resolve, reject) => {
-    db.query(sqlUpdate, [status, userEmail, transferBy, id], (error, results, fields) => {
-      if (error){
-        return console.error(error.message);
+    db.query(sqlUpdate, [status, userEmail, transferBy, id], (err, results, fields) => {
+      if(err) {
+        return reject(err)
       }
       return resolve(results)
     })
@@ -95,7 +103,9 @@ exports.getAtendimento = async (db, from, to) => {
   const sql = 'SELECT * FROM atendimento WHERE cliente_wa_id = ? AND atendente_wa_id = ? ORDER BY created_at DESC'
   const result = await new Promise((resolve, reject) => {
     db.query(sql, [from, to], function(err,results){
-      if(err) {throw err};
+      if(err) {
+        return reject(err)
+      }
       return resolve(results);
     })
   });
@@ -103,17 +113,24 @@ exports.getAtendimento = async (db, from, to) => {
 }
 
 exports.saveMessage = async (db, message, atendimento) => {
-    const sqlInsert = 'INSERT INTO messages (from_wa_id, to_wa, type, body, atendimento_id) VALUES(?,?,?,?,?)'
-    db.query(sqlInsert,
-    [message.from, message.to, message.contents[0].type, message.contents[0].text, atendimento]);
+  const sqlInsert = 'INSERT INTO messages (from_wa_id, to_wa, type, body, atendimento_id) VALUES(?,?,?,?,?)'
+  const result = await new Promise((resolve, reject) => {
+    db.query(sqlInsert, [message.from, message.to, message.contents[0].type, message.contents[0].text, atendimento], function(err,results) {
+      if(err) {
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  });
+  return result
 }
 
 exports.updateStatusMessage = async (db, number) => {
   const sqlUpdate = 'UPDATE contacts SET status = "EM_ATENDIMENTO" WHERE wa_id = ?'
   const result = await new Promise((resolve, reject) => {
-    db.query(sqlUpdate, [number], (error, results, fields) => {
-      if (error){
-        return console.error(error.message);
+    db.query(sqlUpdate, [number], (err, results, fields) => {
+      if(err) {
+        return reject(err)
       }
       return resolve(results)
     })
@@ -141,11 +158,12 @@ exports.lastMessageAll = async (db, status, userEmail = '') => {
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, [status], function(err,results) {
-        if(err) throw err;
-        return resolve(results)
+      if(err) {
+        return reject(err)
+      }
+      return resolve(results)
     })
   });
-  console.log('RESULT ::: ' + JSON.stringify(result))
   return result
 }
 
@@ -174,8 +192,10 @@ exports.lastMessage = async (db, status, userEmail = '') => {
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, [status], function(err,results) {
-        if(err) throw err;
-        return resolve(results)
+      if(err) {
+        return reject(err)
+      }
+      return resolve(results)
     })
   });
   console.log('RESULT ::: ' + JSON.stringify(result))
@@ -187,8 +207,10 @@ exports.messageClient = async (db, from) => {
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, [from], function(err,results) {
-        if(err) throw err;
-        return resolve(results)
+      if(err) {
+        return reject(err)
+      }
+      return resolve(results)
     })
   });
   return result
@@ -209,7 +231,9 @@ exports.messageOfClient = async (db, atendimento ) => {
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, [atendimento], (err,results) => {
-      if(err) throw err;
+      if(err) {
+        return reject(err)
+      }
       return resolve(results)
     })
   });
@@ -221,7 +245,9 @@ exports.clientData = async (db, clientNumber ) => {
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql,[clientNumber], function(err,results){
-      if(err) throw err;
+      if(err) {
+        return reject(err)
+      }
       return resolve(results)
     })
   });
@@ -250,13 +276,28 @@ exports.sendMessageToClient = async (db, clientNumber, message, chatAtendimentoI
   await axios.post(endpoint, body, headers)
 
   const sql = 'INSERT INTO messages (from_wa_id, to_wa, type, body, atendimento_id) VALUES(?,?,?,?,?)'
-    db.query(sql, [fromNumber, clientNumber, 'text', message, chatAtendimentoId]);
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, [fromNumber, clientNumber, 'text', message, chatAtendimentoId], function(err,results) {
+      if(err) {
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  });
+  return result
 }
 
 exports.saveusers = async (db,email,senha,user) => {
   const sqlInsert = 'INSERT INTO `users`(`email`, `password`, `fullName`, `status`,`permission`) VALUES (?,?,?,?,0)'
-    db.query(sqlInsert,
-      [email,senha,user,'pendente']);
+  const result = await new Promise((resolve, reject) => {
+    db.query(sqlInsert, [email,senha,user,'pendente'], function(err,results) {
+      if(err) {
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  });
+  return result
 }
 
 exports.listAtendentes = async (db) => {
@@ -264,8 +305,10 @@ exports.listAtendentes = async (db) => {
 
   const result = await new Promise((resolve, reject) => {
     db.query(sql, function(err,results) {
-        if(err) throw err;
-        return resolve(results)
+      if(err) {
+        return reject(err)
+      }
+      return resolve(results)
     })
   });
   return result
