@@ -63,6 +63,7 @@ for (let helper in helpers) {
 //routes
 const routes = require('./src/routes');
 const zenviaRoutes = require('./zenvia-routes');
+const logger = require("./src/libs/logger");
 app.use([routes, zenviaRoutes]);
 
 //bot
@@ -99,5 +100,6 @@ console.log(getStage("user1"))
 
 //inicia o servidor
 server.listen(process.env.PORT, function(){
+  logger.info('Servidor iniciado na porta ' + process.env.PORT);
   console.log('Servidor iniciado na porta ' + process.env.PORT);
 });

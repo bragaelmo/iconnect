@@ -1,16 +1,18 @@
 const { dbConnect } = require("./repositories/mysql");
+const { v4: uuid } = require('uuid');
 const db = dbConnect();
 
 const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
-const { saveContact, saveMessage, lastMessage, messageOfClient, clientData, sendMessageToClient, saveusers, updateStatusMessage, getMessage, updateAtendimento, listAtendentes, createAtendimento, transferAtendimento, lastMessageAll } = require('./services/zenvia');
+const { saveMessage, lastMessage, messageOfClient, sendMessageToClient, saveusers, getMessage, updateAtendimento, listAtendentes, transferAtendimento, lastMessageAll } = require('./services/zenvia');
 const { route } = require("../zenvia-routes");
 const { atendimento } = require("./services/atendimento");
+const logger = require("./libs/logger");
 
 
 socketIO.on('db', (socket) => {
-    console.log('socket conectado:', socket.id);
+    logger.info('[routes] Socket conectado :: ' + socket.id)
 })
 
 // AJUSTAR LOGIN
@@ -28,7 +30,9 @@ router.get('/', (req,res) => {
 
 
 router.get('/logout', (req, res) => {
+    const execution = uuid()
     if(req.session.login){
+        logger.info('[routes][' + execution + '] Realizado logout de ' + req.session.login + ' com sucesso')
         req.session.destroy();
     }
     res.redirect('/')
@@ -47,16 +51,18 @@ router.post('/login', async (req, res) => {
         res.redirect('/');
         return
     }
-
+    const execution = uuid()
     const session = await login(db, email, password)
     req.session.loginErr = session.loginErr;
 
     if (req.session && req.session.loginErr == false){
+        //logger.info('[routes][' + execution + '] Realizado login de ' + req.session.login + ' com sucesso')
         req.session.name = session.name;
         req.session.login = session.login;
         res.redirect('/userPermission');
         return
     }
+    logger.info('[routes][' + execution + '] Login nao autorizado ' + email)
     res.redirect('/');
 });
 
@@ -67,11 +73,11 @@ router.get("/userPermission", async (req, res) => {
         return
     }
     var userEmail = req.session.login;
-    //var userName = req.session.name;
-
-    const {panel, permission} = await userPermission(db, userEmail)
+    const execution = uuid()
+    const {panel, permission} = await userPermission(db, execution, userEmail)
 
     if(panel){
+        logger.info('[routes][' + execution + '] Realizado login de ' + userEmail + ' no painel ' + panel + ' com permissao ' + permission)
         req.session.permission = permission
         res.redirect(panel)
         return
@@ -81,12 +87,15 @@ router.get("/userPermission", async (req, res) => {
 //FIM ROTAS DE LOGIN E PERMISSÃO ========================================
 function getSessionStrings(req){
     var name = req.session.name.split(' ')[0]
-    return {
+    const execution = uuid()
+    var session =  {
         sessionName: name,
         sessionFullName: req.session.name,
         sessionEmail: req.session.login,
         sessionHost: process.env.HOST + ':' + process.env.PORT
     }
+    logger.info('[routes][' + execution + '] Carregando session com os valores ' + JSON.stringify(session))
+    return session
 }
 // ROTAS DO PAINEL DE AGENTE ============================================
 router.get('/painel-agente', (req,res) => {
@@ -96,10 +105,13 @@ router.get('/painel-agente', (req,res) => {
         res.redirect('/');
         return
     }
-
+    const execution = uuid()
+    var render = './paineis/painel-agente/chat';
     var sidebarHome = "active";
     var container = false;
-    res.render('./paineis/painel-agente/chat',
+    logger.info('[routes][' + execution + '] Carregando ' + render + ' para o usuario ' + req.session.login)
+
+    res.render(render,
     {
         title:'Agente Home - iConect',
         container:container,
@@ -110,16 +122,17 @@ router.get('/painel-agente', (req,res) => {
 
 });
 router.get('/painel-supervisor', (req,res) => {
-    // ------------- VER ESSA PARTE
-
     if(!req.session.login){
         res.redirect('/');
         return
     }
-
+    const execution = uuid()
+    var render = './paineis/painel-supervisor/chat';
     var sidebarHome = "active";
     var container = false;
-    res.render('./paineis/painel-agente/chat',
+    logger.info('[routes][' + execution + '] Carregando ' + render + ' para o usuario ' + req.session.login)
+
+    res.render(render,
     {
         title:'Agente Home - iConect',
         container:container,
@@ -130,7 +143,6 @@ router.get('/painel-supervisor', (req,res) => {
 //gerenciamento de novos agentes
 router.get('/painel-supervisor/gerenciamento', (req,res) => {
     res.render('./paineis/painel-supervisor/gerenciamento')
-
 });
 
 
@@ -139,14 +151,16 @@ router.get('/painel-supervisor/gerenciamento', (req,res) => {
 //webhook
 router.post("/webhook", async (req,res) => {
     const hook = req.body;
-    console.log('ZENVIA :: ' + JSON.stringify(hook))
+    const execution = uuid()
+    logger.info('[routes][' + execution + '] Webhook ' + JSON.stringify(hook))
     try {
         //if it's client message
         if(hook.message){
             const fromClient = hook.message.from
-            const atendimentoId = await atendimento(db, hook)
+            const atendimentoId = await atendimento(db, execution, hook)
 
             socketIO.emit('receivedMessage', {fromClient, atendimentoId})
+            logger.info('[routes][' + execution + '] Webhook registrado com sucesso')
             res.status(200).send({message: "enviado"});
         }
 
@@ -154,7 +168,7 @@ router.post("/webhook", async (req,res) => {
         if(hook.statuses){
             console.log(hook.statuses);
 
-            await saveMessage(db, '557481305345', hook.message)
+            await saveMessage(db, execution, '557481305345', hook.message)
 
             console.log(hook.statuses[0].message);
 
@@ -162,18 +176,24 @@ router.post("/webhook", async (req,res) => {
         }
 
     } catch (err) {
-        return res.status(400).send({ message: "erro json invalido", error: err.message })
+        logger.error('[routes][' + execution + '] Webhook error ' + err.message)
+        return res.status(400).send({ error: err.message })
     }
 });
 
 router.post("/wpp/last-message-client", async (req, res) => {
     const {email} = req.body
+    const execution = uuid()
+    const status = 'EM_ESPERA';
+    logger.info('[routes][/wpp/last-message-client][' + execution + '] parametros ' + email)
+
     try{
-        const response = await lastMessageAll(db, 'EM_ESPERA', email)
-        res.json(response);
-        res.status(200);
+        const response = await lastMessageAll(db, execution, status, email)
+        logger.info('[routes][/wpp/last-message-client][' + execution + '][' + email + '][' + status + '] Retornando mensagens ' + JSON.stringify(response))
+        res.status(200).json(response);
 
     } catch (error){
+        logger.error('[routes][/wpp/last-message-client][' + execution + '][' + email + '][' + status + '] erro ' + error.message)
         res.status(400).json({erro: error.message});
     }
 })
@@ -182,19 +202,24 @@ router.post("/wpp/last-message-client-in-service", async (req, res) => {
 
     // Gerar token de email para dificultar o acesso a atendimentos nao permitidos
     const {email} = req.body
-
+    const status = 'EM_ATENDIMENTO';
+    const execution = uuid()
+    logger.info('[routes][/wpp/last-message-client-in-service][' + execution + '][' + status + '] parametros ' + email)
     try{
-        const response = await lastMessage(db, 'EM_ATENDIMENTO', email)
-        res.json(response);
-        res.status(200);
+        const response = await lastMessage(db, execution, status, email)
+        logger.info('[routes][/wpp/last-message-client-in-service][' + execution + '][' + email + '][' + status + '] Retornando mensagens ' + JSON.stringify(response))
+        res.status(200).json(response);
 
     } catch (error){
+        logger.error('[routes][/wpp/last-message-client-in-service][' + execution + '][' + email + '][' + status + '] erro ' + error.message)
         res.status(400).json({erro: error.message});
     }
 })
 
 router.get('/painel-agente/config', (req,res) => {
     var name = req.session.name.split(' ')[0]
+    const execution = uuid()
+    logger.info('[routes][/painel-agente/config][' + execution + '] parametros ' + name)
     res.render('./paineis/painel-agente/config', {
         ...getSessionStrings(req)
     })
@@ -203,16 +228,23 @@ router.get('/painel-agente/config', (req,res) => {
 //cadastro de agente
 router.get('/cadastro', (req,res) => {
     var name = req.session.name.split(' ')[0]
+    const execution = uuid()
+    logger.info('[routes][/cadastro][' + execution + '] parametros ' + name)
     res.render('./paineis/painel-agente/cadastro', {
         ...getSessionStrings(req)
     })
 });
 //cadastro
 router.post('/cadastro-usuario', async (req,res) =>{
+    const {email, senha, nome} = req.body
+    const execution = uuid()
+    logger.info('[routes][/cadastro-usuario][' + execution + '] parametros ' + JSON.stringify({email, nome}))
     try {
-        await saveusers(db,req.body.email,req.body.senha,req.body.nome)
+        await saveusers(db, execution, email, senha, nome)
+        logger.info('[routes][/cadastro-usuario][' + execution + '] Cadastro realizado com sucesso ' + JSON.stringify({email, nome}))
         res.send(" <script>alert('Cadastro feito com sucesso'); window.location.href = '/'; </script>");
     } catch (error){
+        logger.error('[routes][/cadastro-usuario][' + execution + '] parametros ' + JSON.stringify({email, nome}) + ' :: erro ' + error.message)
         res.status(400).json({erro: error.message});
     }
 
@@ -220,63 +252,73 @@ router.post('/cadastro-usuario', async (req,res) =>{
 
 router.post("/wpp/message-chat-client", async (req,res) => {
     const {atendimento_id} = req.body;
-
+    const execution = uuid()
+    logger.info('[routes][/wpp/message-chat-client][' + execution + '] parametros ' + atendimento_id)
     try{
-        const response = await messageOfClient(db, atendimento_id)
-        res.json(response);
-        res.status(200);
+        const response = await messageOfClient(db, execution, atendimento_id)
+        logger.info('[routes][/wpp/message-chat-client][' + execution + '] Retornando mensagens do atendimento ' + atendimento_id + ' :: mensagens ' + JSON.stringify(response))
+        res.status(200).json(response);
 
     } catch (error){
+        logger.error('[routes][/wpp/message-chat-client][' + execution + '] parametros ' + atendimento_id + ' :: erro ' + error.message)
         res.status(400).json({erro: error.message});
     }
 });
 
-router.post('/wpp/client-data', async (req,res) => {
-    const {clientNumber} = req.body;
-    try{
-        const response = await clientData(db, clientNumber)
-        res.json(response);
-        res.status(200);
+// router.post('/wpp/client-data', async (req,res) => {
+//     const {clientNumber} = req.body;
+//     logger.info('[routes][/wpp/client-data] parametros ' + clientNumber)
+//     try{
+//         const response = await clientData(db, clientNumber)
+//         res.json(response);
+//         res.status(200);
 
-    } catch (error){
-        res.status(400).json({erro: error.message});
-    }
-})
+//     } catch (error){
+//         res.status(400).json({erro: error.message});
+//     }
+// })
 
 router.post('/wpp/send-message', async (req,res) => {
     // Adicionar token de atendimento para permitir o envio somente se o atendente assumir o atendimento
     const {clientNumber, message, chatAtendimentoId, roboNumber} = req.body;
-    console.log(`Enviando mensagem [${message}] para o cliente [${clientNumber}] do robo [${roboNumber}] e atendimento [${chatAtendimentoId}]`)
+    const execution = uuid()
+    logger.info('[routes][/wpp/send-message][' + execution + '] parametros ' + JSON.stringify({clientNumber, message, chatAtendimentoId, roboNumber}))
     try {
-        await sendMessageToClient(db, clientNumber, message, chatAtendimentoId, roboNumber)
+        await sendMessageToClient(db, execution, clientNumber, message, chatAtendimentoId, roboNumber)
+        logger.info(`[routes][/wpp/send-message][${execution}] Mensagem [${message}] enviada com sucesso para o cliente [${clientNumber}] do robo [${roboNumber}] e atendimento [${chatAtendimentoId}]`)
         res.status(200).json({ok: 'ok'});
-        console.log(`Mensagem [${message}] enviada com sucesso para o cliente [${clientNumber}] do robo [${roboNumber}] e atendimento [${chatAtendimentoId}]`)
+
     } catch (error){
+        logger.error('[routes][/wpp/send-message][' + execution + '] Erro ' + error.message)
         res.status(400).json({erro: error.message});
-        console.log('naoenviado');
     }
 })
 
 router.post('/wpp/updatestatus', async (req,res) => {
     const {atendimentoId, userEmail} = req.body;
-
+    const status = 'EM_ATENDIMENTO';
+    const execution = uuid()
+    logger.info('[routes][/wpp/updatestatus][' + execution + '] parametros ' + JSON.stringify({atendimentoId, userEmail}))
     try {
-        //await updateStatusMessage(db, String(from_wa_id))
+        await updateAtendimento(db, execution, userEmail, atendimentoId, status)
+        logger.info('[routes][/wpp/updatestatus][' + execution + '] Atendimento atualizado com sucesso ' + JSON.stringify({userEmail, atendimentoId, status}))
+        res.status(200).json({status: 'ok'});
 
-        await updateAtendimento(db, userEmail, atendimentoId, 'EM_ATENDIMENTO')
-
-        res.status(200).json({ok: 'ok'});
-        console.log('ok ???')
     } catch (error){
+        logger.error('[routes][/wpp/updatestatus][' + execution + '] parametros ' + JSON.stringify({atendimentoId, userEmail}) + ' :: erro ' + error.message)
         res.status(400).json({erro: error.message});
     }
 })
 
 router.get('/list-atendentes', async (req,res) => {
+    const execution = uuid()
+    logger.info('[routes][/list-atendentes][' + execution + '] Listando atendentes')
     try {
-        const response = await listAtendentes(db)
+        const response = await listAtendentes(db, execution)
+        logger.info('[routes][/list-atendentes][' + execution + '] Atendentes encontrados ' + JSON.stringify(response))
         res.status(200).json(response);
     } catch (error){
+        logger.error('[routes][/list-atendentes][' + execution + '] Erro ' + error.message)
         res.status(400).json({erro: error.message});
     }
 })
@@ -288,14 +330,23 @@ router.post('/transfer-service', async (req,res) => {
             phoneClient,
             phoneRobo
         } = req.body
+    const execution = uuid()
+    logger.info('[routes][/transfer-service][' + execution + '] Transferindo atendimento ' + JSON.stringify({ atendimentoId,
+        emailAtendenteFromTransfer,
+        emailAtendenteToTransfer,
+        phoneClient,
+        phoneRobo
+    }))
     try {
-        await transferAtendimento(db, atendimentoId,
+        await transferAtendimento(db, execution, atendimentoId,
             emailAtendenteFromTransfer,
             emailAtendenteToTransfer,
             phoneClient,
             phoneRobo)
+        logger.info('[routes][/transfer-service][' + execution + '] Atendimento transferido com sucesso ')
         res.status(200).json('ok');
     } catch (error){
+        logger.error('[routes][/transfer-service][' + execution + '] Erro ao transferir atendimento :: erro ' + error.message)
         res.status(400).json({erro: error.message});
     }
 })
