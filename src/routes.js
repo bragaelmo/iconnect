@@ -152,7 +152,7 @@ router.get('/painel-supervisor/gerenciamento', (req,res) => {
 router.post("/webhook", async (req,res) => {
     const hook = req.body;
     const execution = uuid()
-    logger.info('[routes][' + execution + '] Webhook ' + JSON.stringify(hook))
+    logger.info('[routes][' + execution + '] Webhook recebido ' + JSON.stringify(hook))
     try {
         //if it's client message
         if(hook.message){

@@ -8,13 +8,12 @@ const { saveContact, createAtendimento, saveMessage, getAtendimento } = require(
 exports.atendimento = async (db, execution, hook) => {
   const from = hook.message.from
   const contact =  await saveContact(db, execution, from, hook.message.visitor.name)
-  logger.info('[atendimento]['+execution+'] Contact ' + JSON.stringify(contact))
 
   var yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
 
   var atendimento = await getAtendimento(db, execution, hook.message.from, hook.message.to)
-  logger.info('[atendimento]['+execution+'] Atendimento encontrado: ' + JSON.stringify(atendimento))
+
   if(
     !atendimento ||
     atendimento.length < 1 ||

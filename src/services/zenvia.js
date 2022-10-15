@@ -18,6 +18,7 @@ exports.getContact = async (db, execution, from) => {
 exports.saveContact = async (db, execution, from, name) => {
   logger.info('[zenvia][saveContact]['+execution+'] Salvando contato ' + from + ' de '+ name)
   const result = await this.getContact(db, execution, from)
+
   if(Object.keys(result).length > 0){
     logger.info('[zenvia][saveContact]['+execution+'] Contato ' + from + ' de '+ name + ' ja existe no banco de dados')
     return result
@@ -30,7 +31,6 @@ exports.saveContact = async (db, execution, from, name) => {
         logger.error('[zenvia][saveContact]['+execution+'] Erro ao criar contato :: query ' + sqlInsert + ' :: parametros ' + JSON.stringify({from, name}) +' :: erro ' + JSON.stringify(err))
         return reject(err)
       }
-      logger.info('[zenvia][saveContact]['+execution+'] Contato ' + from + ' de '+ name + ' criado com sucesso')
       return resolve(resultsInsert);
     });
   });
@@ -70,7 +70,6 @@ exports.createAtendimento = async (db, execution, clientPhone, roboPhone, emailA
 
   if(resultInsert.affectedRows > 0){
     const atendimento = await this.getAtendimento(db, execution, clientPhone, roboPhone)
-    logger.info('[zenvia][createAtendimento]['+execution+'] Retornando atendimento ' + JSON.stringify(contact))
     return atendimento
   }
 }
