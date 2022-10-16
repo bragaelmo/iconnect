@@ -127,7 +127,7 @@ router.get('/painel-supervisor', (req,res) => {
         return
     }
     const execution = uuid()
-    var render = './paineis/painel-supervisor/chat';
+    var render = './paineis/painel-agente/chat';
     var sidebarHome = "active";
     var container = false;
     logger.info('[routes][' + execution + '] Carregando ' + render + ' para o usuario ' + req.session.login)
