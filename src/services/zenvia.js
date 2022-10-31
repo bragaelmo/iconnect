@@ -74,6 +74,7 @@ exports.updateAtendimento = async (db, user, id) => {
   })
   return result
 }
+
 exports.getAtendimento = async (db, from, to) => {
   const sql = 'SELECT * FROM atendimento WHERE cliente_wa_id = ? AND atendente_wa_id = ? ORDER BY created_at DESC'
   const result = await new Promise((resolve, reject) => {
@@ -220,6 +221,18 @@ exports.listAtendentes = async (db) => {
     db.query(sql, function(err,results) {
         if(err) throw err;
         return resolve(results)
+    })
+  });
+  return result
+}
+
+exports.chatapp = async (db, clientNumber ) => {
+  const sql = "SELECT selection_id FROM chat_app ORDER BY id DESC"
+
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql,[clientNumber], function(err,results){
+      if(err) throw err;
+      return resolve(results)
     })
   });
   return result

@@ -139,13 +139,30 @@ router.get('/painel-supervisor/gerenciamento', (req,res) => {
 //webhook
 router.post("/webhook", async (req,res) => {
     const hook = req.body;
-    console.log('ZENVIA :: ' + JSON.stringify(hook))
     try {
         //if it's client message
+        const wa_id = hook.message.from;
+        const name = hook.message.visitor.firstName
+        const id_message = hook.message.id;
+		const timestamp = hook.timestamp;	
+		const type = hook.message.contents[0].type;
+		const payloadInteractive = 	hook.message.contents[0].payload;
+        if (payloadInteractive === null) {
+            type = 'interactive';
+        }
+        if(type == "text"){
+            msg = hook.message.contents[0].text;
+        }else if(type == "interactive"){
+            selection_id = hook.message.contents[0].payload;
+            selection_title = hook.message.contents[0].text;
+        }
+        console.log(payloadInteractive);
+
+        const lastSelectionID = await chatapp(db, clientNumber)
+
         if(hook.message){
             const fromClient = hook.message.from
             const atendimentoId = await atendimento(db, hook)
-
             socketIO.emit('receivedMessage', {fromClient, atendimentoId})
             res.status(200).send({message: "enviado"});
         }
