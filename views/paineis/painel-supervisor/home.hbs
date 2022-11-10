@@ -1,6 +1,7 @@
 <div id="mytask-layout" class="theme-indigo">
     <!-- sidebar -->
     {{> sidebarSupervisor}}
+
     <!-- main body area -->
     <div class="main px-lg-4 px-md-4">
         <!-- Body: Header -->
@@ -9,29 +10,144 @@
         <div class="body d-flex py-lg-3 py-md-2">
             <div class="container-xxl">
                 <div class="col-12">
-                    <div class="card mb-3">
-                        <div class="card-body text-center p-5">
-                            <div class="row g-3 mb-3 row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-2 row-cols-xl-4 row-cols-xxl-4">
-                                <div class="col">
-                                    <div class="card bg-primary">
-                                        <div class="card-body text-white d-flex align-items-center">
-                                            <i class="icofont-chart-flow-1 fs-3"></i>
-                                            <div class="d-flex flex-column ms-3">
-                                                <h6 class="mb-0">GERAL</h6>
-                                                <span class="text-white">12</span>
+                     <!-- Modal Erro -->
+                    <div class="modal fade frame-error" tabindex="-1" aria-labelledby="modalmessageerror" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-error">
+                                <img id="img-error" src="/images/alert.png" width="44" height="38" />
+                                <span class="title-error">Oh rex!</span>
+                                <p id="p-error">Ocorreu um erro ao processar a sua solicitação.</p>
+                                <p id="p-error-message">Se o erro persistir, entre em contato com o administrador do sistema e informe o erro abaixo:</p>
+                                <p id="messageToError"></p>
+                                <div class="button-error">Fechar</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Tranferir-->
+                    <div class="modal fade" id="modaltransferir" tabindex="-1" aria-labelledby="modaltransferir" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header" style="background-color: #075E54; color: white; font-weight: bold;">
+                                    <h5 class="modal-title" id="modaltransferir"> <i class="icofont-ui-user-group fs-4"></i> Tranferir Atendimento</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <ul class="nav nav-tabs tab-body-header rounded d-inline-flex" role="tablist">
+                                        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nav-agentes" role="tab">Atendentes</a></li>
+                                        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#nav-equipe" role="tab">Supervisor</a></li>
+                                    </ul>
+                                    <span id="transfer-client-name" style="display:none;"></span>
+                                    <span id="transfer-atendimentoId" style="display:none;"></span>
+                                    <span id="transfer-roboNumber" style="display:none;"></span>
+                                    <span id="transfer-clientNumber" style="display:none;"></span>
+                                    <div class="tab-content mt-2">
+                                        <div class="tab-pane fade show active" id="nav-agentes" role="tabpanel">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="flex-grow-1" id="listAtendentes">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="nav-equipe" role="tabpanel">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="flex-grow-1" id="listAtendentesSupervisor">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <!--                                                                         <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="button" class="btn btn-primary">Transferir</button>
+                                    </div>
+                                    -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Encerrar atendimento-->
+                    <div class="modal fade" id="modalEncerrarAtendimento" tabindex="-1" aria-labelledby="modalEncerrarAtendimento" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header" style="background-color: #075E54; color: white; font-weight: bold;">
+                                    <h5 class="modal-title" id="modalEncerrarAtendimento"> <i class="icofont-support fs-4"></i> Encerrar atendimento</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="p-modal-encerrar-atendimento"></p>
+                                    <span id="client-name" style="display:none;"></span>
+                                    <span id="client-atendimento-id" style="display:none;"></span>
+                                    <span id="received-zenvia-number" style="display:none;"></span>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="button" onclick="encerrarAtendimento()" class="btn btn-primary">Encerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Chat-->
+                    <div class="modal fade" id="bodyChatSupervisor" tabindex="-1" aria-labelledby="bodyChatSupervisor" style="display: none;" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                 <div class="modal-header" style="background-color: #075E54; color: white; font-weight: bold;">
+                                    <h5 class="modal-title"><i class="icofont-brand-whatsapp"></i> <span id="view-messages-chat"></span></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <ul id="chatBodySupervisor" class="chat-history-supervisor list-unstyled mb-0 flex-grow-1">
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-body text-center p-2">
+                            <div class="row g-3 mb-3 row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-2 row-cols-xl-4 row-cols-xxl-4">
                                 <div class="col">
                                     <div class="card bg-primary">
-                                        <div class="card-body text-white d-flex align-items-center">
-                                            <i class="icofont-support fs-3"></i>
+                                        <div class="card-body text-white d-flex align-items-start">
+                                            <i class="icofont-clock-time fs-3"></i>
                                             <div class="d-flex flex-column ms-3">
-                                                <h6 class="mb-0">ATENDIMENTO</h6>
-                                                <span class="text-white">210</span>
+                                                <h6 class="mb-0 d-flex align-items-start">ESPERA</h6>
+                                                <span class="text-white" id="quantidadeEmEspera"></span>
                                             </div>
                                         </div>
+                                        <ul id="dash-em-espera" class="list-group list-group-custom list-group-flush mb-0">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card bg-primary">
+                                        <div class="card-body text-white d-flex align-items-start">
+                                            <i class="icofont-support fs-3"></i>
+                                            <div class="d-flex flex-column ms-3">
+                                                <h6 class="mb-0 d-flex align-items-start">ATENDIMENTO</h6>
+                                                <span class="text-white" id="quantidadeEmAtendimento"></span>
+                                            </div>
+                                        </div>
+                                        <ul id="dash-em-atendimento" class="list-group list-group-custom list-group-flush mb-0">
+                                            <div id="msg-vazio">
+                                                <li class="list-group-item">
+                                                    <div class="d-flex flex-row-reverse"><small class="msg-time" style="color:#979797; font-size:11px;
+                                                    font-weight:600;"></small></div>
+                                                    <div class="d-flex">
+                                                        <div class="container text-truncate">
+                                                            <div class="row">
+                                                                <div class="d-flex col-md-7"><h6 class="mb-2"></h6></div>
+                                                            </div>
+                                                            <div class="d-flex mt-2">
+                                                                <div class="d-flex col-md-7 align-items-center"><span></span></div>
+                                                                <div class="d-flex col-md-5 align-items-center"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </div>
+                                        </ul>
                                     </div>
                                 </div>
                                 <div class="col">
@@ -39,8 +155,8 @@
                                         <div class="card-body text-white d-flex align-items-center">
                                             <i class="icofont-robot fs-3"></i>
                                             <div class="d-flex flex-column ms-3">
-                                                <h6 class="mb-0">ATEND. BOT</h6>
-                                                <span class="text-white">88 Files</span>
+                                                <h6 class="mb-0 d-flex align-items-start">BOT</h6>
+                                                <span class="text-white">88 Atendimentos resolvido via bot</span>
                                             </div>
                                         </div>
                                     </div>
@@ -48,10 +164,10 @@
                                 <div class="col">
                                     <div class="card bg-primary">
                                         <div class="card-body text-white d-flex align-items-center">
-                                            <i class="icofont-clock-time fs-3"></i>
+                                            <i class="icofont-chart-flow-1 fs-3"></i>
                                             <div class="d-flex flex-column ms-3">
-                                                <h6 class="mb-0">ESPERA</h6>
-                                                <span class="text-white">8456 Files</span>
+                                                <h6 class="mb-0 d-flex align-items-start">GERAL</h6>
+                                                <span class="text-white">Linha do tempo</span>
                                             </div>
                                         </div>
                                     </div>
@@ -64,3 +180,11 @@
         </div>
     </div>
 </div>
+
+<script> const HOST = document.getElementById('my-host').innerText </script>
+<script src="/js/start-clientes-espera.js"></script>
+<script src="/js/start-clientes-atendimento.js"></script>
+<script src="/js/modal-viewer-message-chat.js"></script>
+<script src="/js/list-atendentes.js"></script>
+<script src="/js/encerrar-atendimento.js"></script>
+<script src="/js/monitor-atendimentos.js"></script>

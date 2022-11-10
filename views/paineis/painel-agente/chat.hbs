@@ -69,26 +69,16 @@
                                                                 <div style="transform: translateY(4px);">
                                                                     <div class="btn-group dropend">
                                                                         <a style="border: none; font-size: 18px; cursor: pointer;"class="dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                        <span id="chat-client-name">Carregando...</span>
-                                                                        <span id="chat-client-phone" style="display:none;"></span>
-                                                                        <span id="chat-client-type" style="display:none;"></span>
-                                                                        <span id="chat-client-atendimento-id" style="display:none;"></span>
-                                                                        <span id="chat-received-zenvia-number" style="display:none;"></span>
+                                                                            <span id="chat-client-name">Carregando...</span>
+                                                                            <span id="chat-client-phone" style="display:none;"></span>
+                                                                            <span id="chat-client-type" style="display:none;"></span>
+                                                                            <span id="chat-client-atendimento-id" style="display:none;"></span>
+                                                                            <span id="chat-received-zenvia-number" style="display:none;"></span>
                                                                         </a>
-                                                                        <ul class="dropdown-menu border-0 shadow py-3 px-2" style="display: none;">
+                                                                        <ul class="dropdown-menu border-0 shadow py-3 px-2">
                                                                             <li>
-                                                                                <button type="button" class="dropdown-item py-2 rounded" data-bs-toggle="modal" data-bs-target="#midias">
-                                                                                Mídias
-                                                                                </button>
-                                                                            </li>
-                                                                            <li>
-                                                                                <button type="button" class="dropdown-item py-2 rounded" data-bs-toggle="modal" data-bs-target="#modaltransferir">
-                                                                                Transferir
-                                                                                </button>
-                                                                            </li>
-                                                                            <li>
-                                                                                <button type="button" class="dropdown-item py-2 rounded" data-bs-toggle="modal" data-bs-target="#modalconvidaragente">
-                                                                                Convidar Agente
+                                                                                <button type="button" class="dropdown-item py-2 rounded" onclick="preparaEncerrarAtendimento()" data-bs-toggle="modal" data-bs-target="#modalEncerrarAtendimento">
+                                                                                <i class="icofont-close"></i> Encerrar
                                                                                 </button>
                                                                             </li>
                                                                         </ul>
@@ -123,14 +113,10 @@
                                                     <!-- main menu Search-->
                                                     <div id="buttonMoverAtendimentoDiv" style="display:none;" class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
                                                         <div class="order-0 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 mb-md-0 ">
-                                                            <div class="input-group flex-nowrap input-group-lg">
+                                                            <div class="input-group flex-wrap input-group-lg">
                                                                 <div style="transform: translateY(-6px);">
-                                                                    <button class="btn btn-secondary" id="buttonMoverAtendimento" data-bs-toggle="modal" data-bs-target="#modaltransferir">
-                                                                        <span style="font-size: 15px;" >Transferir</span>
-                                                                         {{!-- onclick="listAtendentes()"  --}}
-                                                                    </button>
-                                                                    <button class="btn btn-primary" id="buttonAtender">
-                                                                        <span style="font-size: 15px;" >Atender</span>
+                                                                    <button class="btn btn-primary" id="buttonAtender" style="display: none;">
+                                                                        <span style="font-size: 15px;">Atender</span>
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -162,172 +148,21 @@
                                                 </div>
                                             </div>
                                             <!-- Modal Tranferir-->
-                                            <div class="modal fade" id="modaltransferir" tabindex="-1" aria-labelledby="modaltransferir" style="display: none;" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header" style="background-color: #075E54; color: white; font-weight: bold;">
-                                                            <h5 class="modal-title" id="modaltransferir"> <i class="icofont-ui-user-group fs-4"></i> Tranferir Atendimento</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <ul class="nav nav-tabs tab-body-header rounded d-inline-flex" role="tablist">
-                                                                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#nav-agentes" role="tab">Atendentes</a></li>
-                                                                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#nav-equipe" role="tab">Supervisor</a></li>
-                                                            </ul>
-                                                            <div class="tab-content mt-2">
-                                                                <div class="tab-pane fade show active" id="nav-agentes" role="tabpanel">
-                                                                    <div class="col-12 my-1">
-                                                                        <div class="input-group">
-                                                                            <input class="form-control" type="search" placeholder="Pesquisar" aria-label="Search" style="border-right: none;">
-                                                                            <div class="input-group-append">
-                                                                                <div class="input-group-text" style="background-color: #FFF"><i class="icofont-search-job fs-5"></i></div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="card">
-                                                                        <div class="card-body">
-                                                                            <div class="flex-grow-1" id="listAtendentes">
-                                                                                {{!-- <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                                                                    <div class="d-flex align-items-center flex-fill">
-                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=mario&background=random&color=ff0000&bold=true">
-                                                                                        <div class="d-flex flex-column ps-3">
-                                                                                            <h6 class="fw-bold mb-0 small-14">Mario</h6>
-                                                                                            <span class="text-muted">mario@gmail.com</span>
-                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Supervisor | Geral</div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                                                                    <div class="d-flex align-items-center flex-fill">
-                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
-                                                                                        <div class="d-flex flex-column ps-3">
-                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
-                                                                                            <span class="text-muted">Sidney@gmail.com</span>
-                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                                                                    <div class="d-flex align-items-center flex-fill">
-                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
-                                                                                        <div class="d-flex flex-column ps-3">
-                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
-                                                                                            <span class="text-muted">Sidney@gmail.com</span>
-                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                                                                    <div class="d-flex align-items-center flex-fill">
-                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
-                                                                                        <div class="d-flex flex-column ps-3">
-                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
-                                                                                            <span class="text-muted">Sidney@gmail.com</span>
-                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                                                                    <div class="d-flex align-items-center flex-fill">
-                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
-                                                                                        <div class="d-flex flex-column ps-3">
-                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
-                                                                                            <span class="text-muted">Sidney@gmail.com</span>
-                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                                                                    <div class="d-flex align-items-center flex-fill">
-                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
-                                                                                        <div class="d-flex flex-column ps-3">
-                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
-                                                                                            <span class="text-muted">Sidney@gmail.com</span>
-                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                                                                    <div class="d-flex align-items-center flex-fill">
-                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
-                                                                                        <div class="d-flex flex-column ps-3">
-                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
-                                                                                            <span class="text-muted">Sidney@gmail.com</span>
-                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                                                                    <div class="d-flex align-items-center flex-fill">
-                                                                                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=sidney+lopes&background=random&color=ff0000&bold=true">
-                                                                                        <div class="d-flex flex-column ps-3">
-                                                                                            <h6 class="fw-bold mb-0 small-14">Sidney Lopes</h6>
-                                                                                            <span class="text-muted">Sidney@gmail.com</span>
-                                                                                            <div class="text-muted"><i class="icofont-engineer"></i> Geral / Comercial / Tecnico / Financeiro</div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div> --}}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="nav-equipe" role="tabpanel">
-                                                                    <div class="card">
-                                                                        <div class="card-body">
-                                                                            <!-- List Group: with badge left side -->
-                                                                            <ul class="list-group list-group-custom">
-                                                                                {{!-- <li class="list-group-item">
-                                                                                    <div class="btn btn-outline-warning" style="width: 100%; text-align: left;">
-                                                                                        <span class="badge bg-warning me-2">17</span>
-                                                                                        Geral
-                                                                                    </div>
-                                                                                </li>
-                                                                                <li class="list-group-item">
-                                                                                    <div class="btn btn-outline-primary" style="width: 100%; text-align: left;">
-                                                                                        <span class="badge bg-primary me-2">14</span>
-                                                                                        Comercial
-                                                                                    </div>
-                                                                                </li>
-                                                                                <li class="list-group-item">
-                                                                                    <div class="btn btn-outline-danger" style="width: 100%; text-align: left;">
-                                                                                        <span class="badge bg-danger me-2">2</span>
-                                                                                        Técnico
-                                                                                    </div>
-                                                                                </li>
-                                                                                <li class="list-group-item">
-                                                                                    <div class="btn btn-outline-info" style="width: 100%; text-align: left;">
-                                                                                        <span class="badge bg-info me-2">1</span>
-                                                                                        Financeiro
-                                                                                    </div>
-                                                                                </li> --}}
-                                                                            </ul>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!--                                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                            <button type="button" class="btn btn-primary">Transferir</button>
-                                                            </div>
-                                                            -->
-                                                    </div>
-                                                </div>
-                                            </div>
+
                                             <!-- Modal Convidar Agente-->
-                                            <div class="modal fade" id="modalconvidaragente" tabindex="-1" aria-labelledby="modalconvidaragente" style="display: none;" aria-hidden="true">
+                                            <div class="modal fade" id="modalEncerrarAtendimento" tabindex="-1" aria-labelledby="modalEncerrarAtendimento" style="display: none;" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                                     <div class="modal-content">
                                                         <div class="modal-header" style="background-color: #075E54; color: white; font-weight: bold;">
-                                                            <h5 class="modal-title" id="modalconvidaragente"> <i class="icofont-support fs-4"></i>Convidar Agente</h5>
+                                                            <h5 class="modal-title" id="modalEncerrarAtendimento"> <i class="icofont-support fs-4"></i> Encerrar atendimento</h5>
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            ...
+                                                            <p id="p-modal-encerrar-atendimento"></p>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                                            <button type="button" class="btn btn-primary">Convidar</button>
+                                                            <button type="button" onclick="encerrarAtendimento()" class="btn btn-primary">Encerrar</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -603,14 +438,508 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
 
 
 <script>
     //var server = "https://pag.rexinternet.com.br:3000";
     //render message chat
 
+        //Checar se a zenvia envia emoji
+           // $('#textarea').emojioneArea({
+           //     pickerPosition: "top"
+           // });//
 
+    const HOST = document.getElementById('my-host').innerText
+
+    var server = HOST;
+    var socket = io.connect(server);
+
+    //render all messages that received
+    socket.on("receivedMessage", (data) => {
+        initialSocket(data)
+    })
+
+    function initialSocket(data){
+      const phoneChat = document.getElementById("chat-client-phone").innerText
+      const chatOpen = document.getElementById("chat-client-name").innerText
+      var renderChatAutomatic = false
+
+      if(phoneChat == data.fromClient){
+        renderChatAutomatic = true
+      }
+
+      if(chatOpen != ''){
+        viewerChat(data.atendimentoId, renderChatAutomatic)
+      }
+
+      if($('#em-espera-style').hasClass('active')){
+        startListClients()
+      } else if ($('#em-atendimento-style').hasClass('active')) {
+        startListClientsEmAtendimento()
+      }
+
+      //Parte para adiconar no sininho se tem notificação
+      var not = parseInt(document.getElementById('noti').innerText);
+      not = not + 1;
+      document.getElementById('noti').innerHTML = not;
+      document.getElementById('noti2').innerHTML = not;
+    }
+
+    function renderMessageInChat(obj){
+        const chatBody = document.getElementById('chatBody');
+
+        const dateHourBr = new Date(obj.timeMsg)
+        obj.timeMsg = dateHourBr.toLocaleString().replace(',', '').slice(0, -3).replace('/', '-').replace('/', '-')
+
+
+        if(obj.isClient){
+          messageClient(obj)
+        }
+    }
+
+    var query = location.search.slice(1);
+    var partes = query.split('&');
+    var data = {};
+    partes.forEach(function (parte) {
+        var chaveValor = parte.split('=');
+        var chave = chaveValor[0];
+        var valor = chaveValor[1];
+        data[chave] = valor;
+    });
+
+    function messageClient(obj){
+       chatBody.insertAdjacentHTML("beforeend",`
+            <li class="mb-3 d-flex flex-row align-items-end" id="messageOpen">
+                <div class="max-width-70">
+                    <div class="user-info mb-1">
+                        <span class="text-muted small">
+                            <br> ${obj.name}:
+                        </span>
+                    </div>
+                    <div class="card border-0 p-3">
+                        <div class="message"><p>${obj.body}</p> <p class="dateHourChat"> ${obj.timeMsg} </p></div>
+                    </div>
+                </div>
+            </li>`
+        )
+    }
+
+    function messageAtendente(obj){
+       chatBody.insertAdjacentHTML("beforeend",`
+          <li class="mb-3 d-flex flex-row justify-content-end" id="messageOpen">
+              <div class="max-width-70">
+                  <div class="user-info mb-1">
+                      <span class="text-muted small">
+                      <br>Robo Zenvia:</span>
+                  </div>
+                  <div class="card border-0 p-3">
+                      <div class="message"><p>${obj.body}</p> <p class="dateHourChat"> ${obj.timeMsg} </p></div>
+                  </div>
+              </div>
+        </li>`)
+    }
+            //headerClient chatBody chatFooter
+
+    disableComponents()
+    function disableComponents(){
+      document.getElementById("headerClient").style.display = "none";
+      document.getElementById("headerClientEmpty").style.display = "block";
+      document.getElementById("chatBody").style.display = "none";
+      document.getElementById("chatBodyEmpty").style.display = "block";
+     // document.getElementById("buttonMoverAtendimentoDiv").style.display = "none";
+      document.getElementById("chatFooter").style.display = "none";
+      document.getElementById("chatFooterEmpty").style.display = "block";
+      document.getElementById("chat-client-name").innerText = ''
+      document.getElementById("chat-client-photo").src = ''
+      document.getElementById("chat-client-type").innerText = ''
+      document.getElementById("chat-client-phone").innerText = ''
+      document.getElementById("chat-client-atendimento-id").innerText = ''
+      document.getElementById("chat-received-zenvia-number").innerText = ''
+    }
+
+    startListClients()
+    function startListClients(){
+        $('.msg').fadeOut(600, function(){ $(this).remove();});
+        const email = document.getElementById('my-mail').innerText
+        fetch(HOST+'/wpp/last-message-client', {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({email: email}),
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.error){
+            throw new Error(data.error)
+            }
+
+            for(clients of data){
+                const client = {
+                    clientNumber: clients.from_wa_id,
+                    clientName: clients.name,
+                    timeMsg: clients.messageCreatedAt,
+                    clientMsg: clients.body,
+                    atendimentoId: clients.atendimentoId,
+                    atendimentoStatus: clients.atendimentoStatus,
+                    atendimentoUserId: clients.atendimentoUserId,
+                    transferBy: clients.transfer_by
+                }
+
+                listContactsWaiting(client);
+            }
+        })
+        .catch(err => {
+            showModalError(err.message)
+        })
+    }
+
+    function listContactsWaiting(obj){
+        const dateHourBr = new Date(obj.timeMsg)
+        obj.timeMsg = dateHourBr.toLocaleString().replace(',', '').slice(0, -3).replace('/', '-').replace('/', '-')
+
+        $('#contact_area').prepend(
+            `<div class="msg">
+                <a onclick="viewerChat(${obj.atendimentoId})">
+                <span id="infoMsg"></span>
+                <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
+                    <div class="d-flex">
+                        <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
+                        <div class="flex-fill ms-3 text-truncate">
+                            <h6 class="d-flex justify-content-between mb-0"><span><b>${obj.clientName}</b></span> <small class="msg-time"><b>${obj.timeMsg}</b></small></h6>
+                            <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i></span>
+                            ${obj.clientMsg}
+                        </div>
+                    </div>
+                </li>
+                </a>
+            </div>`
+        )
+    }
+
+    //startListClientsEmAtendimento()
+    function startListClientsEmAtendimento(){
+      $('.msg').fadeOut(600, function(){ $(this).remove();});
+      const email = document.getElementById('my-mail').innerText
+      fetch(HOST+'/wpp/last-message-client-in-service', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({email: email}),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.error){
+          throw new Error(data.error)
+        }
+        for(clients of data){
+
+          const client = {
+              clientNumber: clients.from_wa_id,
+              clientName: clients.name,
+              timeMsg: clients.messageCreatedAt,
+              clientMsg: clients.body,
+              atendimentoId: clients.atendimentoId,
+              atendimentoStatus: clients.atendimentoStatus,
+              atendimentoUserId: clients.atendimentoUserId
+          }
+          console.log('CLIENT TESTE ' + JSON.stringify(client))
+          listContactsInService(client);
+        }
+      })
+      .catch(err => {
+        showModalError(err.message)
+      })
+    }
+
+    onclickCloseChatBody()
+    function onclickCloseChatBody(){
+      document.getElementById("em-atendimento-style").setAttribute('onclick', `closeChatBodyEspera()`)
+      document.getElementById("em-espera-style").setAttribute('onclick', `closeChatBodyAtendimento()`)
+    }
+    function closeChatBodyEspera(){
+      document.getElementById('chatBody').innerHTML = ''
+      disableComponents()
+      startListClientsEmAtendimento()
+    }
+    function closeChatBodyAtendimento(){
+      document.getElementById('chatBody').innerHTML = ''
+      disableComponents()
+      startListClients()
+    }
+
+    function listContactsInService(obj){
+        const dateHourBr = new Date(obj.timeMsg)
+        obj.timeMsg  = dateHourBr.toLocaleString().replace(',', '').slice(0, -3).replace('/', '-').replace('/', '-')
+
+      $('#contact_area_atendimento').prepend(
+          `<div class="msg">
+            <a onclick="viewerChat(${obj.atendimentoId})" >
+              <li class="list-group-item px-md-4 py-3 py-md-4 n${obj.clientNumber}">
+                  <div class="d-flex">
+                      <img class="avatar lg rounded-circle img-thumbnail" style="border: 1px solid silver; text-align: center;" src="https://ui-avatars.com/api/?name=${obj.clientName}&background=random&color=ff0000&bold=true">
+                      <div class="flex-fill ms-3 text-truncate">
+                          <h6 class="d-flex justify-content-between mb-0"><span>${obj.clientName}</span> <small class="msg-time">${obj.timeMsg}</small></h6>
+                          <span class="text-muted"> <i class="icofont-swoosh-right   fs-5"></i></span>
+                          ${obj.clientMsg}
+                      </div>
+                  </div>
+              </li>
+            </a>
+          </div>`
+      )
+    }
+
+    function renderMessagesInChat(arr){
+      // Apaga as mensagens em aberto do chat
+      document.getElementById('chatBody').innerHTML = ''
+
+      var nameClient = ''
+      var phoneClient = ''
+      var statusClient = ''
+      var atendimentoId = ''
+      var roboNumber = ''
+
+      for(item of arr){
+        var timeMsg = item.created_at;
+
+        const dateTime = timeMsg.split('T')
+        const date = dateTime[0].split('-')
+        const dateFinish = `${date[2]}-${date[1]}-${date[0]}`
+        const time = dateTime[1].split('.')[0].split(':')
+        // Ordem exemplo: 26-09-2022 10:40
+        const timeFinish = `${dateFinish} ${time[0]}:${time[1]}`
+        item.timeMsg = timeFinish
+
+        if(item.perfil == 'CLIENTE'){
+          messageClient(item)
+          nameClient = item.name
+          statusClient = item.status
+          phoneClient = item.from_wa_id
+          //atendimentoId = item.atendimento_id
+          roboNumber= item.to_wa
+        }
+
+        if(item.perfil == 'ATENDENTE'){
+          messageAtendente(item)
+        }
+
+      }
+
+      var atendimentoId = document.getElementById("chat-client-atendimento-id").innerText
+      //document.getElementById("buttonMoverAtendimentoDiv").style.display = "block";
+      document.getElementById("chat-client-name").innerText = nameClient;
+      document.getElementById("chat-client-photo").src = `https://ui-avatars.com/api/?name=${nameClient}&background=random&color=ff0000&bold=true`;
+      document.getElementById("chat-client-type").innerText = statusClient
+      document.getElementById("chat-client-phone").innerText = phoneClient;
+      // document.getElementById("chat-client-atendimento-id").innerText = atendimentoId;
+      document.getElementById("chat-received-zenvia-number").innerText = roboNumber;
+
+      getStatusAtendimento(atendimentoId)
+      .then(atendimento => {
+        if(atendimento.error){
+          throw new Error(data.error)
+        }
+
+        if (atendimento && atendimento.status == 'EM_ATENDIMENTO'){
+          document.getElementById("buttonAtender").style.display = 'none'
+          document.getElementById("chatFooterEmpty").style.display = 'none'
+          document.getElementById("chatFooter").style.display = 'block'
+        } else {
+          document.getElementById("chatFooter").style.display = "none";
+          document.getElementById("buttonAtender").style.display = "block";
+          document.getElementById("buttonAtender").setAttribute('onclick', `butAtender(${atendimentoId})`)
+          document.getElementById("chatFooterEmpty").style.display = "block";
+        }
+
+        enableComponents()
+
+        // Scroll to message more recent after 500ms
+        setTimeout(()=>{
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }, 500)
+      }).catch(err => {
+        showModalError(err.message)
+      })
+      return
+    }
+
+    function getStatusAtendimento(atendimentoId){
+      return fetch(HOST+'/service-status', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({atendimentoId}),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.error){
+          throw new Error(data.error)
+        }
+        return data
+      }).catch(err => {
+        showModalError(err.message)
+      })
+    }
+
+    function atender(atendimentoId, userEmail){
+      fetch(HOST+'/wpp/updatestatus', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({atendimentoId, userEmail}),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.error){
+          throw new Error(data.error)
+        }
+      }).catch(err => {
+        showModalError(err.message)
+      })
+    }
+
+//    function modalMoverAtendimento(clientNumber){
+  //      let messageOpen = document.getElementById("chatBody").style.display
+    //    if (messageOpen === 'block'){
+            // $('#modalCloseMessage').modal('show')
+      //      const clientName = document.getElementById("chat-client-name").innerText
+        //    $('#spanInBodyModalCloseMessage').text("Mover o atendimento de "+clientName+" ("+clientNumber+") para a fila de " )
+          //  document.getElementById("buttonMover").setAttribute('onclick', `atender(${clientNumber})`)
+        //}
+    //}
+
+    function butAtender(atendimentoId){
+      var userEmail = document.getElementById('my-mail').innerText
+      var phoneChat = document.getElementById("chat-client-phone").innerText
+
+      atender(atendimentoId, userEmail)
+
+      $('#em-atendimento-style').addClass('active')
+      $('#em-espera-style').removeClass('active')
+      $('#em-atendimento').addClass('active')
+      $('#em-atendimento').addClass('show')
+      initialSocket({fromClient: phoneChat, atendimentoId})
+    }
+
+    function enableComponents(){
+      document.getElementById("headerClient").style.display = "block";
+      document.getElementById("headerClientEmpty").style.display = "none";
+      document.getElementById("chatBody").style.display = "block";
+      document.getElementById("chatBodyEmpty").style.display = "none";
+    }
+
+    function viewerChat(atendimentoId, renderAutomatic = true){
+      //render msg of DB
+      var userEmail = document.getElementById('my-mail').innerText
+      if (typeof atendimentoId !== 'undefined') {
+        // AJUSTAR ENVIO DE MENSAGEM APOS TRANSFERENCIA
+          document.getElementById("chat-client-atendimento-id").innerText = atendimentoId
+          //RENDER MESSAGES IN CHAT
+          fetch(HOST+'/wpp/message-chat-client', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({atendimento_id: atendimentoId}),
+          })
+          .then(res => res.json())
+          .then(data => {
+            if(data.error){
+              throw new Error(data.error)
+            }
+
+            //render msg chat
+            if(renderAutomatic){
+              renderMessagesInChat(data);
+            }
+          })
+          .catch(err => {
+            showModalError(err.message)
+          })
+
+      } else {
+        disableComponents()
+      }
+    }
+
+    function showModalError(message){
+      $('#messageToError').text(message)
+      $('.frame-error').modal('show');
+    }
+
+    function preparaEncerrarAtendimento(){
+      const clientName = document.getElementById("chat-client-name").innerText
+      $('#p-modal-encerrar-atendimento').text("Deseja encerrar o atendimento de " + clientName + "?")
+    }
+
+    function encerrarAtendimento(){
+      const atendimentoId = document.getElementById("chat-client-atendimento-id").innerText
+      fetch(HOST+'/finish-atendimento', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ atendimentoId  }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.error){
+          throw new Error(data.error)
+        }
+      })
+      .catch(err => {
+        showModalError(err.message)
+      })
+      location.reload()
+    }
+
+    function sendmsg(){
+      msg = document.getElementById('textarea').value;
+      var chatBody = document.getElementById('chatBody');
+      var chatPhone = document.getElementById("chat-client-phone").innerText;
+      var chatAtendimentoId = document.getElementById("chat-client-atendimento-id").innerText;
+      var roboNumber = document.getElementById("chat-received-zenvia-number").innerText;
+
+      if(msg){
+          sendMessageToClient(chatPhone, msg, chatAtendimentoId, roboNumber);
+          messageAtendente({body: msg, timeMsg: ''})
+      }
+
+      chatBody.scrollTop = chatBody.scrollHeight;
+      document.getElementById('textarea').value = '';
+    }
+
+    //Função da rota pra enviar para o cliente
+    function sendMessageToClient(clientNumber, message, chatAtendimentoId, roboNumber){
+      fetch(HOST+'/wpp/send-message',{
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({clientNumber, message, chatAtendimentoId, roboNumber}),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.error){
+          throw new Error(data.error)
+        }
+      })
+      .catch(err => {
+        showModalError(err.message)
+      })
+    }
 
     const messages = document.getElementById('chatBody');
 

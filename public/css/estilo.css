@@ -18046,7 +18046,7 @@ body.rtl_mode table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first
 }
 .card-chat .list-group .msg-time{
     font-size:11px;
-    font-weight:600
+    font-weight:600;
 }
 @media only screen and (max-width: 767px){
     .card-chat .nav-link{
@@ -18069,11 +18069,11 @@ body.rtl_mode table.dataTable.dtr-inline.collapsed>tbody>tr[role="row"]>td:first
 a#em-atendimento-style.active {
     background-color: #FFBA20;
 }
-button#buttonMoverAtendimento {
+/* button#buttonMoverAtendimento {
     background-color: #133AB6;
     border-color: white;
     color: white;
-}
+} */
 .dateHourChat{
     font-size: 10px;
     text-align: right;
