@@ -16,6 +16,7 @@ const { saveMessage, lastMessage, messageOfClient, sendMessageToClient, saveuser
 const { route } = require("../zenvia-routes");
 const { atendimento } = require("./services/atendimento");
 const logger = require("./libs/logger");
+const session = require("express-session");
 
 
 socketIO.on('db', (socket) => {
@@ -134,7 +135,7 @@ router.get('/painel-supervisor', (req,res) => {
         return
     }
     const execution = uuid()
-    var render = './paineis/painel-supervisor/home';
+
     var sidebarHome = "active";
     var container = false;
     logger.info('[routes][' + execution + '] Carregando ' + render + ' para o usuario ' + req.session.login)
@@ -262,10 +263,16 @@ router.post("/wpp/message-client-in-service", async (req, res) => {
 
 router.get('/painel-agente/config', (req,res) => {
     var name = req.session.name.split(' ')[0]
+    var namesa = req.session.name
+    var emailn = req.session.login
     const execution = uuid()
     logger.info('[routes][/painel-agente/config][' + execution + '] parametros ' + name)
     res.render('./paineis/painel-agente/config', {
+        name:namesa,
+        email:emailn,
         ...getSessionStrings(req)
+        
+
     })
 });
 
