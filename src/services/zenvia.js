@@ -56,12 +56,13 @@ exports.saveContact = async (db, execution, from, name) => {
 //   return result
 // }
 
-exports.createAtendimento = async (db, execution, clientPhone, roboPhone, emailAtendente = null, transferBy = null)=>{
-  const sqlInsert = 'INSERT INTO atendimento(cliente_wa_id, atendente_wa_id, status, user_email, transfer_by) VALUES(?,?,"EM_ESPERA",? ,?)'
+exports.createAtendimento = async (db, execution, clientPhone, roboPhone, emailAtendente = null, transferBy = null, dataHistory = null)=>{
+  const status = "EM_ESPERA"
+  const sqlInsert = 'INSERT INTO atendimento(cliente_wa_id, atendente_wa_id, status, user_email, transfer_by, history) VALUES(?, ?, ? ,? ,?, ?)'
   const resultInsert = await new Promise((resolve, reject) => {
-    db.query(sqlInsert, [clientPhone, roboPhone, emailAtendente, transferBy], function(err,resultsInsert){
+    db.query(sqlInsert, [clientPhone, roboPhone, status, emailAtendente, transferBy, dataHistory], function(err,resultsInsert){
       if(err) {
-        logger.error('[zenvia][createAtendimento]['+execution+'] Erro ao criar atendimento :: query ' + sqlInsert + ' :: parametros ' + JSON.stringify({clientPhone, roboPhone, emailAtendente, transferBy}) +' :: erro ' + JSON.stringify(err))
+        logger.error('[zenvia][createAtendimento]['+execution+'] Erro ao criar atendimento :: query ' + sqlInsert + ' :: parametros ' + JSON.stringify({clientPhone, roboPhone, status, emailAtendente, transferBy, dataHistory}) +' :: erro ' + JSON.stringify(err))
         return reject(err)
       }
       return resolve(resultsInsert);
@@ -80,22 +81,25 @@ exports.transferAtendimento = async (db, execution, atendimentoId,
   phoneClient,
   phoneRobo) => {
 
+  const dataHistory = await this.getHistoricoAtendimento(db, execution, atendimentoId)
+
+  logger.info('PRINT ARRAY HISTORICO ' + JSON.stringify(dataHistory))
   // Atualiza o status do atendimento atual para 'TRANSFERIDO'
-  this.updateAtendimento(db, execution, emailAtendenteFromTransfer, atendimentoId, 'TRANSFERIDO')
+  await this.updateAtendimentoToTransfer(db, execution, emailAtendenteFromTransfer, atendimentoId, 'TRANSFERIDO', dataHistory)
 
   // Cria novo atendimento
-  const atendimento = this.createAtendimento(db, execution, phoneClient, phoneRobo, emailAtendenteToTransfer, emailAtendenteFromTransfer)
+  const atendimento = await this.createAtendimento(db, execution, phoneClient, phoneRobo, emailAtendenteToTransfer, emailAtendenteFromTransfer, dataHistory)
   if (atendimento && atendimento.id){
     logger.info('[transferAtendimento]['+execution+'] Atendimento transferido ' + JSON.stringify(atendimento))
   }
 }
 
-exports.updateAtendimento = async (db, execution, userEmail, id, status, transferBy = null) => {
-  const sqlUpdate = 'UPDATE atendimento SET status = ?, user_email = ?, transfer_by = ? WHERE id = ?'
+exports.updateAtendimentoToTransfer = async (db, execution, userEmail, id, status, dataHistory = null) => {
+  const sqlUpdate = 'UPDATE atendimento SET status = ?, user_email = ?, history = ? WHERE id = ?'
   const result = await new Promise((resolve, reject) => {
-    db.query(sqlUpdate, [status, userEmail, transferBy, id], (err, results, fields) => {
+    db.query(sqlUpdate, [status, userEmail, dataHistory, id], (err, results, fields) => {
       if(err) {
-        logger.error('[zenvia][updateAtendimento]['+execution+'] Erro ao atualizar atendimento :: query ' + sqlUpdate + ' :: parametros ' + JSON.stringify({status, userEmail, transferBy, id}) +' :: erro ' + JSON.stringify(err))
+        logger.error('[zenvia][updateAtendimentoToTransfer]['+execution+'] Erro ao atualizar atendimento :: query ' + sqlUpdate + ' :: parametros ' + JSON.stringify({status, userEmail, dataHistory, id}) +' :: erro ' + JSON.stringify(err))
         return reject(err)
       }
       return resolve(results)
@@ -104,12 +108,64 @@ exports.updateAtendimento = async (db, execution, userEmail, id, status, transfe
   return result
 }
 
-exports.getAtendimento = async (db, execution, from, to) => {
-  const sql = 'SELECT * FROM atendimento WHERE cliente_wa_id = ? AND atendente_wa_id = ? ORDER BY created_at DESC'
+exports.updateAtendimento = async (db, execution, status, atendimentoId) => {
+  const sqlUpdate = status === 'FINALIZADO' ?  'UPDATE atendimento SET status = ?, finish_at = NOW() WHERE id = ?' : 'UPDATE atendimento SET status = ?, updated_at = NOW() WHERE id = ?'
   const result = await new Promise((resolve, reject) => {
-    db.query(sql, [from, to], function(err,results){
+    db.query(sqlUpdate, [status, atendimentoId], (err, results) => {
       if(err) {
-        logger.error('[zenvia][getAtendimento]['+execution+'] Erro a selecionar atendimento :: query ' + sql + ' :: parametros ' + JSON.stringify({from, to}) + ' :: erro ' + JSON.stringify(err))
+        logger.error('[zenvia][updateAtendimento]['+execution+'] Erro ao atualizar atendimento :: query ' + sqlUpdate + ' :: parametros ' + JSON.stringify({status, atendimentoId}) +' :: erro ' + JSON.stringify(err))
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  })
+  return result
+}
+
+exports.aceitarAtendimento = async (db, execution, userEmail, atendimentoId, status) => {
+  const sqlUpdate = 'UPDATE atendimento SET status = ?, user_email = ? WHERE id = ?'
+  const result = await new Promise((resolve, reject) => {
+    db.query(sqlUpdate, [status, userEmail, atendimentoId], (err, results) => {
+      if(err) {
+        logger.error('[zenvia][aceitarAtendimento]['+execution+'] Erro ao aceitar atendimento :: query ' + sqlUpdate + ' :: parametros ' + JSON.stringify({userEmail, atendimentoId, status}) +' :: erro ' + JSON.stringify(err))
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  })
+  return result
+}
+
+// Criar um getHistori passando o id de atendimento e devera retornar todo historico
+exports.getHistoricoAtendimento = async (db, execution, atendimentoId) => {
+  const sql = 'SELECT history FROM atendimento WHERE id = ?'
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, [atendimentoId], function(err,results){
+      if(err) {
+        logger.error('[zenvia][getHistoricoAtendimento]['+execution+'] Erro a selecionar historico de atendimento :: query ' + sql + ' :: parametros ' + atendimentoId + ' :: erro ' + JSON.stringify(err))
+        return reject(err)
+      }
+      return resolve(results);
+    })
+  });
+
+  var history = atendimentoId
+  if(result && result.length > 0){
+    history = result[0].history ? history +','+ result[0].history : history
+  }
+
+  logger.info('HISTORICO DE ATENDIMENTO PARA ' + atendimentoId + ' ===' + history)
+  return history
+}
+
+exports.getAtendimento = async (db, execution, phoneClient, phoneRobo, emailAtendente = null) => {
+  const complement = emailAtendente ? `AND user_email = '${emailAtendente}'` : '';
+
+  const sql = 'SELECT * FROM atendimento WHERE cliente_wa_id = ? AND atendente_wa_id = ? '+complement+' ORDER BY created_at DESC'
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, [phoneClient, phoneRobo], function(err,results){
+      if(err) {
+        logger.error('[zenvia][getAtendimento]['+execution+'] Erro a selecionar atendimento :: query ' + sql + ' :: parametros ' + JSON.stringify({phoneClient, phoneRobo}) + ' :: erro ' + JSON.stringify(err))
         return reject(err)
       }
       return resolve(results);
@@ -177,25 +233,51 @@ exports.lastMessageAll = async (db, execution, status, userEmail = '') => {
   return result
 }
 
-exports.lastMessage = async (db, execution, status, userEmail = '') => {
-
-  var complement = ''
-  if (userEmail != ''){
-    complement = `AND atendimento.user_email = "${userEmail}"`
-  }
+exports.messagesInAwaitToSupervisor = async (db, execution, status) => {
 
   var sql = `
-    SELECT contacts.name, contacts.perfil, messages.from_wa_id, messages.body, messages.type, messages.to_wa, messages.created_at AS messageCreatedAt,
-    atendimento.id AS atendimentoId, atendimento.status AS atendimentoStatus, atendimento.user_email AS atendimentoUserEmail
-    FROM messages
+    SELECT atendimento.transfer_by, atendimento.cliente_wa_id, atendimento.atendente_wa_id, atendimento.id AS atendimentoId, atendimento.status AS atendimentoStatus, atendimento.user_email AS atendimentoUserEmail,
+    messages.id AS message_id, messages.body, messages.created_at AS messageCreatedAt,
+    contacts.name, contacts.perfil
+    FROM atendimento
+    INNER JOIN messages
+    ON atendimento.cliente_wa_id = messages.from_wa_id
     INNER JOIN contacts
     ON contacts.wa_id = messages.from_wa_id
-    INNER JOIN atendimento
-    ON atendimento.id = messages.atendimento_id
-    WHERE atendimento.status
-    IN (?)
-    AND contacts.perfil <> 'ATENDENTE'
-    ${complement}
+    WHERE atendimento.atendente_wa_id = messages.to_wa
+    AND atendimento.status = 'EM_ESPERA'
+    AND messages.created_at
+    IN (SELECT MAX(messages.created_at) AS created_at FROM messages GROUP BY messages.from_wa_id)
+  `
+
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, [status], function(err,results) {
+      if(err) {
+        logger.error('[zenvia][messagesInAwaitToSupervisor]['+execution+'] Erro ao capturar mensagem :: query ' + sql + ' :: parametros ' + JSON.stringify({status}) +' :: erro ' + JSON.stringify(err))
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  });
+  return result
+}
+
+exports.lastMessage = async (db, execution, status, userEmail = '') => {
+  var sql = `
+    SELECT atendimento.transfer_by, atendimento.cliente_wa_id, atendimento.atendente_wa_id, atendimento.id AS atendimentoId, atendimento.status AS atendimentoStatus, atendimento.user_email AS atendimentoUserEmail,
+    messages.id AS message_id, messages.body, messages.created_at AS messageCreatedAt,
+    contacts.name, contacts.perfil,
+    users.fullName AS nameAtendente, users.setor AS setorAtendente
+    FROM atendimento
+    INNER JOIN messages
+    ON atendimento.cliente_wa_id = messages.from_wa_id
+    INNER JOIN contacts
+    ON contacts.wa_id = messages.from_wa_id
+    INNER JOIN users
+    ON atendimento.user_email = users.email
+    WHERE atendimento.atendente_wa_id = messages.to_wa
+    AND atendimento.status = 'EM_ATENDIMENTO'
+    AND (atendimento.user_email IS NULL OR atendimento.user_email = '${userEmail}')
     AND messages.created_at
     IN (SELECT MAX(messages.created_at) AS created_at FROM messages GROUP BY messages.from_wa_id)
   `
@@ -204,6 +286,37 @@ exports.lastMessage = async (db, execution, status, userEmail = '') => {
     db.query(sql, [status], function(err,results) {
       if(err) {
         logger.error('[zenvia][lastMessage]['+execution+'] Erro ao capturar mensagem :: query ' + sql + ' :: parametros ' + JSON.stringify({status, userEmail}) +' :: erro ' + JSON.stringify(err))
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  });
+  return result
+}
+
+exports.messagesInServiceToSupervisor = async (db, execution, status) => {
+  var sql = `
+    SELECT atendimento.transfer_by, atendimento.cliente_wa_id, atendimento.atendente_wa_id, atendimento.id AS atendimentoId, atendimento.status AS atendimentoStatus, atendimento.user_email AS atendimentoUserEmail,
+    messages.id AS message_id, messages.body, messages.created_at AS messageCreatedAt,
+    contacts.name, contacts.perfil,
+    users.fullName AS nameAtendente, users.setor AS setorAtendente
+    FROM atendimento
+    INNER JOIN messages
+    ON atendimento.cliente_wa_id = messages.from_wa_id
+    INNER JOIN contacts
+    ON contacts.wa_id = messages.from_wa_id
+    INNER JOIN users
+    ON atendimento.user_email = users.email
+    WHERE atendimento.atendente_wa_id = messages.to_wa
+    AND atendimento.status = 'EM_ATENDIMENTO'
+    AND messages.created_at
+    IN (SELECT MAX(messages.created_at) AS created_at FROM messages GROUP BY messages.from_wa_id)
+  `
+
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, [status], function(err,results) {
+      if(err) {
+        logger.error('[zenvia][messagesInServiceToSupervisor]['+execution+'] Erro ao capturar mensagem :: query ' + sql + ' :: parametros ' + JSON.stringify({status}) +' :: erro ' + JSON.stringify(err))
         return reject(err)
       }
       return resolve(results)
@@ -226,8 +339,13 @@ exports.lastMessage = async (db, execution, status, userEmail = '') => {
 //   return result
 // }
 
-exports.messageOfClient = async (db, execution, atendimento ) => {
+exports.messageOfClient = async (db, execution, atendimentoId ) => {
   // const sql = 'SELECT messages.created_at, messages.from_wa_id, messages.to_wa, messages.body, contacts.name, contacts.perfil, contacts.status FROM messages INNER JOIN contacts ON contacts.wa_id = messages.from_wa_id WHERE messages.from_wa_id = ? OR (messages.from_wa_id = 557481305345 and messages.to_wa = ?)'
+  const atendimentos = await this.getHistoricoAtendimento(db, execution, atendimentoId)
+
+
+  const IN =  atendimentos ? `IN (${atendimentos})` : `IN (${atendimentoId})`
+  logger.info('[zenvia][messageOfClient]['+execution+'] Capturando mensagens dos atendimentos ' + IN )
 
   const sql = `
     SELECT messages.created_at, messages.from_wa_id, messages.to_wa, messages.body, messages.atendimento_id, contacts.name, contacts.perfil, atendimento.status
@@ -236,13 +354,14 @@ exports.messageOfClient = async (db, execution, atendimento ) => {
     ON contacts.wa_id = messages.from_wa_id
     INNER JOIN atendimento
     ON messages.atendimento_id = atendimento.id
-    WHERE atendimento.id = ?
+    WHERE messages.atendimento_id
+    ${IN}
   `
-
+  console.log('PRINT QUERY ' + sql)
   const result = await new Promise((resolve, reject) => {
-    db.query(sql, [atendimento], (err,results) => {
+    db.query(sql, (err,results) => {
       if(err) {
-        logger.error('[zenvia][messageOfClient]['+execution+'] Erro ao capturar mensagem :: query ' + sql + ' :: parametros ' + atendimento +' :: erro ' + JSON.stringify(err))
+        logger.error('[zenvia][messageOfClient]['+execution+'] Erro ao capturar mensagem :: query ' + sql + ' :: parametros ' + atendimentoId + ', ' + atendimentos + ' :: erro ' + JSON.stringify(err))
         return reject(err)
       }
       return resolve(results)
@@ -321,6 +440,48 @@ exports.listAtendentes = async (db, execution) => {
     db.query(sql, function(err,results) {
       if(err) {
         logger.error('[zenvia][listAtendentes]['+execution+'] Erro ao criar usuario :: query ' + sql + ' :: erro ' + JSON.stringify(err))
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  });
+  return result
+}
+
+exports.getServiceStatus = async (db, execution, atendimentoId) => {
+  const sql = "SELECT status FROM atendimento WHERE id = " + atendimentoId
+
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, function(err,results) {
+      if(err) {
+        logger.error('[zenvia][getServiceStatus]['+execution+'] Erro ao capturar status do atendimento :: query ' + sql + ' :: erro ' + JSON.stringify(err))
+        return reject(err)
+      }
+      return resolve(results)
+    })
+  });
+  return result[0]
+}
+
+exports.monitorAtendimento = async (db, execution) => {
+  const sql = `
+    SELECT atendimento.created_at AS criacaoAtendimento, atendimento.updated_at AS updateAtendimento, atendimento.finish_at AS fimAtendimento, atendimento.transfer_by, atendimento.cliente_wa_id, atendimento.atendente_wa_id, atendimento.id AS atendimentoId, atendimento.status AS atendimentoStatus, atendimento.user_email AS atendimentoUserEmail,
+    messages.id AS message_id, messages.body, messages.created_at AS messageCreatedAt,
+    contacts.name, contacts.perfil
+    FROM atendimento
+    INNER JOIN messages
+    ON atendimento.cliente_wa_id = messages.from_wa_id
+    INNER JOIN contacts
+    ON contacts.wa_id = messages.from_wa_id
+    WHERE atendimento.atendente_wa_id = messages.to_wa
+    AND atendimento.created_at > CURDATE()
+    AND messages.created_at
+    IN (SELECT MAX(messages.created_at) AS created_at FROM messages GROUP BY messages.from_wa_id)
+  `
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, function(err,results) {
+      if(err) {
+        logger.error('[zenvia][monitorAtendimento]['+execution+'] Erro ao monitorar atendimentos :: query ' + sql + ' :: erro ' + JSON.stringify(err))
         return reject(err)
       }
       return resolve(results)

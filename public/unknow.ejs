@@ -18,8 +18,8 @@
 
     <ul id="messages"></ul>
     <script type="text/javascript">
-        //var server = "http://localhost:3000";
-        var server = "http://pag.rexinternet.com.br:3000";
+        var server = "http://localhost:3000";
+        //var server = "http://pag.rexinternet.com.br:3000";
         var socket = io(server);
 
 
@@ -68,16 +68,16 @@ $.ajax({
     success: function (response) {
         console.log(response);
         var messages = document.getElementById("messages");
- 
+
         // parse JSON to javascript object
         var data = JSON.parse(response);
         for (var a = 0; a < data.length; a++) {
             // creates new DOM element
             var li = document.createElement("li");
- 
+
             // add message content as HTML
             li.innerHTML = data[a].message;
- 
+
             // append at the end of list
             messages.appendChild(li);
         }

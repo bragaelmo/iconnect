@@ -1,3 +1,10 @@
+/////////
+///////////
+// AJUSTAR BUG NA HORA DE ATENDER NO PERFIL DE ATENDENTE
+/////////
+//////////
+//////////
+
 const { dbConnect } = require("./repositories/mysql");
 const { v4: uuid } = require('uuid');
 const db = dbConnect();
@@ -5,7 +12,7 @@ const db = dbConnect();
 const { login, userPermission } = require("./services/authentication");
 const router = require('express').Router(); //express
 const socketIO = require('../socket');             //socket
-const { saveMessage, lastMessage, messageOfClient, sendMessageToClient, saveusers, getMessage, updateAtendimento, listAtendentes, transferAtendimento, lastMessageAll } = require('./services/zenvia');
+const { saveMessage, lastMessage, messageOfClient, sendMessageToClient, saveusers, getMessage, listAtendentes, transferAtendimento, lastMessageAll, aceitarAtendimento, getServiceStatus, updateAtendimento, messagesInServiceToSupervisor, messagesInAwaitToSupervisor, monitorAtendimento } = require('./services/zenvia');
 const { route } = require("../zenvia-routes");
 const { atendimento } = require("./services/atendimento");
 const logger = require("./libs/logger");
@@ -127,7 +134,7 @@ router.get('/painel-supervisor', (req,res) => {
         return
     }
     const execution = uuid()
-    var render = './paineis/painel-supervisor/chat';
+    var render = './paineis/painel-supervisor/home';
     var sidebarHome = "active";
     var container = false;
     logger.info('[routes][' + execution + '] Carregando ' + render + ' para o usuario ' + req.session.login)
@@ -136,7 +143,8 @@ router.get('/painel-supervisor', (req,res) => {
     {
         title:'Agente Home - iConect',
         container:container,
-        sidebarHome: sidebarHome
+        sidebarHome: sidebarHome,
+        ...getSessionStrings(req)
     });
 
 });
@@ -192,9 +200,26 @@ router.post("/wpp/last-message-client", async (req, res) => {
         logger.info('[routes][/wpp/last-message-client][' + execution + '][' + email + '][' + status + '] Retornando mensagens ' + JSON.stringify(response))
         res.status(200).json(response);
 
-    } catch (error){
-        logger.error('[routes][/wpp/last-message-client][' + execution + '][' + email + '][' + status + '] erro ' + error.message)
-        res.status(400).json({erro: error.message});
+    } catch (err){
+        logger.error('[routes][/wpp/last-message-client][' + execution + '][' + email + '][' + status + '] erro ' + err.message)
+        res.status(400).json({ error: err.message });
+    }
+})
+
+router.post("/wpp/message-client", async (req, res) => {
+    const {email} = req.body
+    const execution = uuid()
+    const status = 'EM_ESPERA';
+    logger.info('[routes][/wpp/message-client][' + execution + '] parametros ' + email)
+
+    try{
+        const response = await messagesInAwaitToSupervisor(db, execution, status)
+        logger.info('[routes][/wpp/message-client][' + execution + '][' + email + '][' + status + '] Retornando mensagens ' + JSON.stringify(response))
+        res.status(200).json(response);
+
+    } catch (err){
+        logger.error('[routes][/wpp/message-client][' + execution + '][' + email + '][' + status + '] erro ' + err.message)
+        res.status(400).json({ error: err.message });
     }
 })
 
@@ -210,11 +235,30 @@ router.post("/wpp/last-message-client-in-service", async (req, res) => {
         logger.info('[routes][/wpp/last-message-client-in-service][' + execution + '][' + email + '][' + status + '] Retornando mensagens ' + JSON.stringify(response))
         res.status(200).json(response);
 
-    } catch (error){
-        logger.error('[routes][/wpp/last-message-client-in-service][' + execution + '][' + email + '][' + status + '] erro ' + error.message)
-        res.status(400).json({erro: error.message});
+    } catch (err){
+        logger.error('[routes][/wpp/last-message-client-in-service][' + execution + '][' + email + '][' + status + '] erro ' + err.message)
+        res.status(400).json({ error: err.message });
     }
 })
+
+router.post("/wpp/message-client-in-service", async (req, res) => {
+
+    // Gerar token de email para dificultar o acesso a atendimentos nao permitidos
+    const status = 'EM_ATENDIMENTO';
+    const execution = uuid()
+    logger.info('[routes][/wpp/message-client-in-service][' + execution + '][' + status + '] Consultando mensagens em atendimento')
+    try{
+        const response = await messagesInServiceToSupervisor(db, execution, status)
+        logger.info('[routes][/wpp/message-client-in-service][' + execution + '][' + status + '] Retornando mensagens ' + JSON.stringify(response))
+        res.status(200).json(response);
+
+    } catch (err){
+        logger.error('[routes][/wpp/message-client-in-service][' + execution + '][' + status + '] erro ' + err.message)
+        res.status(400).json({ error: err.message });
+    }
+})
+
+
 
 router.get('/painel-agente/config', (req,res) => {
     var name = req.session.name.split(' ')[0]
@@ -243,9 +287,9 @@ router.post('/cadastro-usuario', async (req,res) =>{
         await saveusers(db, execution, email, senha, nome)
         logger.info('[routes][/cadastro-usuario][' + execution + '] Cadastro realizado com sucesso ' + JSON.stringify({email, nome}))
         res.send(" <script>alert('Cadastro feito com sucesso'); window.location.href = '/'; </script>");
-    } catch (error){
-        logger.error('[routes][/cadastro-usuario][' + execution + '] parametros ' + JSON.stringify({email, nome}) + ' :: erro ' + error.message)
-        res.status(400).json({erro: error.message});
+    } catch (err){
+        logger.error('[routes][/cadastro-usuario][' + execution + '] parametros ' + JSON.stringify({email, nome}) + ' :: erro ' + err.message)
+        res.status(400).json({ error: err.message });
     }
 
 });
@@ -255,13 +299,14 @@ router.post("/wpp/message-chat-client", async (req,res) => {
     const execution = uuid()
     logger.info('[routes][/wpp/message-chat-client][' + execution + '] parametros ' + atendimento_id)
     try{
+
         const response = await messageOfClient(db, execution, atendimento_id)
         logger.info('[routes][/wpp/message-chat-client][' + execution + '] Retornando mensagens do atendimento ' + atendimento_id + ' :: mensagens ' + JSON.stringify(response))
         res.status(200).json(response);
 
-    } catch (error){
-        logger.error('[routes][/wpp/message-chat-client][' + execution + '] parametros ' + atendimento_id + ' :: erro ' + error.message)
-        res.status(400).json({erro: error.message});
+    } catch (err){
+        logger.error('[routes][/wpp/message-chat-client][' + execution + '] parametros ' + atendimento_id + ' :: erro ' + err.message)
+        res.status(400).json({ error: err.message });
     }
 });
 
@@ -288,9 +333,9 @@ router.post('/wpp/send-message', async (req,res) => {
         logger.info(`[routes][/wpp/send-message][${execution}] Mensagem [${message}] enviada com sucesso para o cliente [${clientNumber}] do robo [${roboNumber}] e atendimento [${chatAtendimentoId}]`)
         res.status(200).json({ok: 'ok'});
 
-    } catch (error){
-        logger.error('[routes][/wpp/send-message][' + execution + '] Erro ' + error.message)
-        res.status(400).json({erro: error.message});
+    } catch (err){
+        logger.error('[routes][/wpp/send-message][' + execution + '] Erro ' + err.message)
+        res.status(400).json({ error: err.message });
     }
 })
 
@@ -300,13 +345,13 @@ router.post('/wpp/updatestatus', async (req,res) => {
     const execution = uuid()
     logger.info('[routes][/wpp/updatestatus][' + execution + '] parametros ' + JSON.stringify({atendimentoId, userEmail}))
     try {
-        await updateAtendimento(db, execution, userEmail, atendimentoId, status)
+        await aceitarAtendimento(db, execution, userEmail, atendimentoId, status)
         logger.info('[routes][/wpp/updatestatus][' + execution + '] Atendimento atualizado com sucesso ' + JSON.stringify({userEmail, atendimentoId, status}))
         res.status(200).json({status: 'ok'});
 
-    } catch (error){
-        logger.error('[routes][/wpp/updatestatus][' + execution + '] parametros ' + JSON.stringify({atendimentoId, userEmail}) + ' :: erro ' + error.message)
-        res.status(400).json({erro: error.message});
+    } catch (err){
+        logger.error('[routes][/wpp/updatestatus][' + execution + '] parametros ' + JSON.stringify({atendimentoId, userEmail}) + ' :: erro ' + err.message)
+        res.status(400).json({ error: err.message });
     }
 })
 
@@ -317,9 +362,9 @@ router.get('/list-atendentes', async (req,res) => {
         const response = await listAtendentes(db, execution)
         logger.info('[routes][/list-atendentes][' + execution + '] Atendentes encontrados ' + JSON.stringify(response))
         res.status(200).json(response);
-    } catch (error){
-        logger.error('[routes][/list-atendentes][' + execution + '] Erro ' + error.message)
-        res.status(400).json({erro: error.message});
+    } catch (err){
+        logger.error('[routes][/list-atendentes][' + execution + '] Erro ' + err.message)
+        res.status(400).json({ error: err.message });
     }
 })
 
@@ -345,11 +390,51 @@ router.post('/transfer-service', async (req,res) => {
             phoneRobo)
         logger.info('[routes][/transfer-service][' + execution + '] Atendimento transferido com sucesso ')
         res.status(200).json('ok');
-    } catch (error){
-        logger.error('[routes][/transfer-service][' + execution + '] Erro ao transferir atendimento :: erro ' + error.message)
-        res.status(400).json({erro: error.message});
+    } catch (err){
+        logger.error('[routes][/transfer-service][' + execution + '] Erro ao transferir atendimento :: erro ' + err.message)
+        res.status(400).json({ error: err.message });
     }
 })
 
+router.post('/service-status', async (req,res) => {
+    const { atendimentoId } = req.body
+    const execution = uuid()
+    logger.info('[routes][/service-status][' + execution + '] Verificando status do atendimento '+atendimentoId)
+    try {
+        const response = await getServiceStatus(db, execution, atendimentoId)
+        logger.info('[routes][/service-status][' + execution + '] Atendimento com status ' + JSON.stringify(response))
+        res.status(200).json(response);
+    } catch (err){
+        logger.error('[routes][/service-status][' + execution + '] Erro ' + err.message)
+        res.status(400).json({ error: err.message });
+    }
+})
+
+router.post('/finish-atendimento', async (req,res) => {
+    const { atendimentoId } = req.body
+    const status = 'FINALIZADO'
+    const execution = uuid()
+    logger.info('[routes][/finish-atendimento][' + execution + '] Atualizando status do atendimento ' + atendimentoId + ' para ' + status)
+    try {
+        const response = await updateAtendimento(db, execution, status, atendimentoId)
+        logger.info('[routes][/finish-atendimento][' + execution + '] Atendimento atualizado com status ' + JSON.stringify(response))
+        res.status(200).json(response);
+    } catch (err){
+        logger.error('[routes][/finish-atendimento][' + execution + '] Erro ' + err.message)
+        res.status(400).json({ error: err.message });
+    }
+})
+
+router.post('/monitor-atendimentos', async (req,res) => {
+    const execution = uuid()
+    try {
+        const response = await monitorAtendimento(db, execution)
+        logger.info('[routes][/monitor-atendimento][' + execution + '] Monitorando atendimentos ' + JSON.stringify(response))
+        res.status(200).json(response);
+    } catch (err){
+        logger.error('[routes][/monitor-atendimento][' + execution + '] Erro ' + err.message)
+        res.status(400).json({ error: err.message });
+    }
+})
 
 module.exports = router;
